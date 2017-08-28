@@ -7,6 +7,8 @@ typedef struct BinaryTreeNode BinaryTree;
 
 typedef void (*Deallocator)(void *object);
 
+void NOOP(void *object) {}
+
 BinaryTree *BinaryTree_new(void *content, BinaryTree *lchild,
                            BinaryTree *rchild);
 

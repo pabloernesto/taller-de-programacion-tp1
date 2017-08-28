@@ -4,7 +4,6 @@
 #include <assert.h>
 #include "../src/bintree.h"
 
-static void noop(void *object);
 static void test_errorAlreadyHaslchild();
 static void test_addToRoot();
 
@@ -23,7 +22,7 @@ static void test_errorAlreadyHaslchild() {
     return_value = BinaryTree_newLeft(tree, NULL);
     assert(return_value == -1);
 
-    BinaryTree_delete(tree, noop);
+    BinaryTree_delete(tree, NOOP);
 }
 
 static void test_addToRoot() {
@@ -36,7 +35,5 @@ static void test_addToRoot() {
     assert('b' == *((char*) BinaryTree_getContent(tree)));
     assert('a' == *((char*) BinaryTree_getContent(BinaryTree_lchild(tree))));
 
-    BinaryTree_delete(tree, noop);
+    BinaryTree_delete(tree, NOOP);
 }
-
-static void noop(void *object) {}

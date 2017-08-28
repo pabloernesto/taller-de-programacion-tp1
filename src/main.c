@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include "bintree.h"
 
-static void noop(void *object);
-
 int main(int argc, char **argv) {
     char *string1 = "Hello";
     char *string2 = "World!";
@@ -19,7 +17,5 @@ int main(int argc, char **argv) {
     printf("%s %s\n", (char *) BinaryTree_getContent(tree),
                       (char *) BinaryTree_getContent(BinaryTree_rchild(tree)));
 
-    BinaryTree_delete(tree, noop);
+    BinaryTree_delete(tree, NOOP);
 }
-
-static void noop(void *object) {}
