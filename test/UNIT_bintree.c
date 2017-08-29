@@ -22,7 +22,7 @@ static void test_errorAlreadyHaslchild() {
     return_value = BinaryTree_newLeft(tree, NULL);
     assert(return_value == -1);
 
-    BinaryTree_delete(tree, NOOP);
+    BinaryTree_delete(tree, noOP);
 }
 
 static void test_addToRoot() {
@@ -32,8 +32,8 @@ static void test_addToRoot() {
     BinaryTree *tree = BinaryTree_new(&a, NULL, NULL);
     tree = BinaryTree_new(&b, tree, NULL);
 
-    assert('b' == *((char*) BinaryTree_getContent(tree)));
-    assert('a' == *((char*) BinaryTree_getContent(BinaryTree_lchild(tree))));
+    assert('b' == *((char*) BinaryTree_getLiveContent(tree)));
+    assert('a' == *((char*) BinaryTree_getLiveContent(BinaryTree_lchild(tree))));
 
-    BinaryTree_delete(tree, NOOP);
+    BinaryTree_delete(tree, noOP);
 }

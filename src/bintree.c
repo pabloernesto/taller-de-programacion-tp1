@@ -9,13 +9,18 @@ struct BinaryTreeNode {
     void *content;
 };
 
+void noOP(void *object) {}
+
 BinaryTree *BinaryTree_new(void *content, BinaryTree *lchild,
                            BinaryTree *rchild) {
     BinaryTree *self = (BinaryTree *) malloc(sizeof(BinaryTree));
     assert(self != NULL);
-    self->content = content;
-    self->lchild = lchild;
-    self->rchild = rchild;
+
+    *self = (BinaryTree) {
+        .content = content,
+        .lchild = lchild,
+        .rchild = rchild
+    };
     return self;
 }
 
@@ -36,7 +41,7 @@ void BinaryTree_delete(BinaryTree *self, Deallocator f) {
     free(self);
 }
 
-void *BinaryTree_getContent(const BinaryTree *self) {
+void *BinaryTree_getLiveContent(const BinaryTree *self) {
     return self->content;
 }
 
@@ -46,6 +51,11 @@ BinaryTree *BinaryTree_lchild(const BinaryTree *self) {
 
 BinaryTree *BinaryTree_rchild(const BinaryTree *self) {
     return self->rchild;
+}
+
+int BinaryTree_isLeaf(const BinaryTree *self) {
+    return (NULL == BinaryTree_lchild(self)) &&
+           (NULL == BinaryTree_rchild(self));
 }
 
 int BinaryTree_insertLeft(BinaryTree *target, BinaryTree *package) {
@@ -58,6 +68,18 @@ int BinaryTree_insertRight(BinaryTree *target, BinaryTree *package) {
     if (target->rchild != NULL) return -1;
     target->rchild = package;
     return 0;
+}
+
+BinaryTree *BinaryTree_extractLeft(BinaryTree *self) {
+    BinaryTree *x = self->lchild;
+    self->lchild = NULL;
+    return x;
+}
+
+BinaryTree *BinaryTree_extractRight(BinaryTree *self) {
+    BinaryTree *x = self->rchild;
+    self->rchild = NULL;
+    return x;
 }
 
 int BinaryTree_newLeft(BinaryTree *self, void *content) {

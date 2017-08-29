@@ -14,8 +14,11 @@ int main(int argc, char **argv) {
      *
      */
 
-    printf("%s %s\n", (char *) BinaryTree_getContent(tree),
-                      (char *) BinaryTree_getContent(BinaryTree_rchild(tree)));
+    BinaryTree *root = tree;
+    BinaryTree *child = BinaryTree_rchild(tree);
 
-    BinaryTree_delete(tree, NOOP);
+    printf("%s %s\n", (char *) BinaryTree_getLiveContent(root),
+                      (char *) BinaryTree_getLiveContent(child));
+
+    BinaryTree_delete(tree, noOP);
 }
