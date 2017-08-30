@@ -18,6 +18,7 @@ static Rope *splitLeaf(Rope *self, int p);
 static int getValue(const Rope *self);
 static void setValue(Rope *self, int value);
 static char *getText(const Rope *self);
+static void toStringRecurse(const Rope *self, char *s);
 
 Rope *Rope_new() {
     RopeContent *c = (RopeContent *) malloc(sizeof(RopeContent));
@@ -75,9 +76,17 @@ int Rope_size(const Rope *self) {
     if (self == NULL) return 0;
 
     /* If this is a leaf. */
-    if (getText(self) == NULL) return strlen(getText(self));
+    if (getText(self) != NULL) return strlen(getText(self));
 
     return getValue(self) + Rope_size(BinaryTree_rchild(self));
+}
+
+char *Rope_toString(const Rope *self) {
+    int size = Rope_size(self) + 1;
+    char *s = (char *) malloc(size);
+    toStringRecurse(self, s);
+    s[size - 1] = '\0';
+    return s;
 }
 
 static void deleteContent(void *self) {
@@ -124,4 +133,14 @@ static void setValue(Rope *self, int value) {
 static char *getText(const Rope *self) {
     RopeContent *c = (RopeContent *) BinaryTree_getLiveContent(self);
     return c->text;
+}
+
+static void toStringRecurse(const Rope *self, char *s) {
+    if (self == NULL) return;
+    if (BinaryTree_isLeaf(self)) {
+        strcpy(s, getText(self));
+        return;
+    }
+    toStringRecurse(BinaryTree_lchild(self), s);
+    toStringRecurse(BinaryTree_rchild(self), s + getValue(self));
 }

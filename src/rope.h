@@ -46,4 +46,11 @@ Rope *Rope_join(Rope *l_rope, Rope *r_rope);
 
 int Rope_size(const Rope *self);
 
+/* Returns the contents of the Rope as a null-terminated string.
+ *
+ * This function returns a pointer to a new string which holds the full
+ * contents of self. Memory for the new string is obtained with malloc,
+ * and can be freed with free. */
+char *Rope_toString(const Rope *self);
+
 #endif
