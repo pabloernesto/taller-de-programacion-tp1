@@ -76,7 +76,12 @@ int Rope_size(const Rope *self) {
     if (self == NULL) return 0;
 
     /* If this is a leaf. */
-    if (getText(self) != NULL) return strlen(getText(self));
+    if (BinaryTree_isLeaf(self)) {
+        /* If this is an empty rope. */
+        if (getText(self) == NULL) return 0;
+
+        return strlen(getText(self));
+    }
 
     return getValue(self) + Rope_size(BinaryTree_rchild(self));
 }
@@ -84,6 +89,8 @@ int Rope_size(const Rope *self) {
 char *Rope_toString(const Rope *self) {
     int size = Rope_size(self) + 1;
     char *s = (char *) malloc(size);
+    assert(s != NULL);
+
     toStringRecurse(self, s);
     s[size - 1] = '\0';
     return s;
@@ -136,11 +143,20 @@ static char *getText(const Rope *self) {
 }
 
 static void toStringRecurse(const Rope *self, char *s) {
+    /* NULL pointer. */
     if (self == NULL) return;
+
+    /* Leaf. */
     if (BinaryTree_isLeaf(self)) {
+        /* Empty leaf. */
+        if (getText(self) == NULL) return;
+
+        /* Non empty leaf. */
         strcpy(s, getText(self));
         return;
     }
+
+    /* Recurse. */
     toStringRecurse(BinaryTree_lchild(self), s);
     toStringRecurse(BinaryTree_rchild(self), s + getValue(self));
 }
