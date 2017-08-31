@@ -9,11 +9,13 @@
 static void test_sizeOfEmptyStringIsZero();
 static void test_toStringOfEmptyRopeReturnsEmptyString();
 static void test_splitAtOffset0LeafOnly();
+static void test_splitAtEndIsNoopLeafOnly();
 
 int main(int argc, char **argv) {
     test_sizeOfEmptyStringIsZero();
     test_toStringOfEmptyRopeReturnsEmptyString();
     test_splitAtOffset0LeafOnly();
+    test_splitAtEndIsNoopLeafOnly();
     printf("All tests ok.\n");
 }
 
@@ -43,6 +45,22 @@ static void test_splitAtOffset0LeafOnly() {
 
     s = Rope_toString(b);
     assert(strcmp("ello World!", s) == 0);
+    free(s);
+
+    Rope_delete(a);
+    Rope_delete(b);
+}
+
+static void test_splitAtEndIsNoopLeafOnly() {
+    Rope *a = Rope_newFrom("Hello World!");
+    Rope *b = Rope_split(a, -1);
+
+    char *s = Rope_toString(a);
+    assert(strcmp("Hello World!", s) == 0);
+    free(s);
+
+    s = Rope_toString(b);
+    assert(strcmp("", s) == 0);
     free(s);
 
     Rope_delete(a);

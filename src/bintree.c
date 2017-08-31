@@ -35,6 +35,8 @@ void BinaryTree_deleteRight(BinaryTree *self, Deallocator f) {
 }
 
 void BinaryTree_delete(BinaryTree *self, Deallocator f) {
+    if (self == NULL) return;
+
     BinaryTree_deleteLeft(self, f);
     BinaryTree_deleteRight(self, f);
     f(self->content);
