@@ -105,10 +105,11 @@ static void deleteContent(void *self) {
 static Rope *splitRecursive(Rope *self, int p) {
     if (BinaryTree_isLeaf(self)) return splitLeaf(self, p);
 
-    if (p < getValue(self))
-        return splitRecursive(BinaryTree_lchild(self), p);
-
-    else if (p > getValue(self))
+    if (p < getValue(self)) {
+        Rope *tmp = BinaryTree_extractRight(self);
+        return Rope_join(splitRecursive(BinaryTree_lchild(self), p),
+                         tmp);
+    } else if (p > getValue(self))
         return splitRecursive(BinaryTree_rchild(self), p - getValue(self));
 
     return BinaryTree_extractRight(self);
@@ -122,7 +123,7 @@ static Rope *splitLeaf(Rope *self, int p) {
     int len = strlen(text);
     if (p > len - 2) return NULL;
 
-    Rope *ret = Rope_newFrom(text + p);
+    Rope *ret = Rope_newFrom(text + p + 1);
     text[p + 1] = '\0';
     return ret;
 }
