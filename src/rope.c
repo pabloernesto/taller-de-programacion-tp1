@@ -43,7 +43,7 @@ void Rope_delete(Rope *self) {
 }
 
 Rope *Rope_split(Rope *self, int p) {
-    if (p < 0) p += Rope_size(self);
+    if (p < 0) p += Rope_size(self) + 1;
     assert(p >= 0);
     return splitRecursive(self, p);
 }
@@ -119,13 +119,12 @@ static Rope *splitRecursive(Rope *self, int p) {
 static Rope *splitLeaf(Rope *self, int p) {
     assert(p >= 0);
 
-    /* At or past the end of a string, this function is a no-op. */
     char *text = getText(self);
     int len = strlen(text);
-    if (p > len - 1) return Rope_new();
+    assert(p <= len);
 
     Rope *ret = Rope_newFrom(text + p);
-    text[p + 1] = '\0';
+    text[p] = '\0';
     return ret;
 }
 
