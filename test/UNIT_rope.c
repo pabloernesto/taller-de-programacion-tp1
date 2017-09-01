@@ -9,6 +9,7 @@
 static void test_sizeOfEmptyStringIsZero();
 static void test_sizeLeaf();
 static void test_sizeSmallFullTree();
+static void test_sizeSmallPartialTree();
 static void test_toStringOfEmptyRopeReturnsEmptyString();
 static void test_splitAtOffset0LeafOnly();
 static void test_splitAtEndIsNoopLeafOnly();
@@ -18,6 +19,7 @@ int main(int argc, char **argv) {
     test_sizeOfEmptyStringIsZero();
     test_sizeLeaf();
     test_sizeSmallFullTree();
+    test_sizeSmallPartialTree();
     test_toStringOfEmptyRopeReturnsEmptyString();
     test_splitAtOffset0LeafOnly();
     test_splitAtEndIsNoopLeafOnly();
@@ -44,6 +46,16 @@ static void test_sizeSmallFullTree() {
     Rope *right = Rope_newFrom("67890");
     Rope *r = Rope_join(left, right);
     assert(Rope_size(r) == 10);
+
+    Rope_delete(r);
+}
+
+static void test_sizeSmallPartialTree() {
+    Rope *t1 = Rope_newFrom("123");
+    Rope *t2 = Rope_newFrom("456");
+    Rope *t3 = Rope_newFrom("789");
+    Rope *r = Rope_join(Rope_join(t1, t2), t3);
+    assert(Rope_size(r) == 9);
 
     Rope_delete(r);
 }
