@@ -22,6 +22,7 @@ static void test_splitLastCharLeafOnly();
 
 static void test_splitSmallFullTreeAtJoin();
 static void test_splitSmallFullTree();
+static void test_splitLargePartialTree();
 
 int main(int argc, char **argv) {
     test_sizeOfEmptyStringIsZero();
@@ -40,6 +41,7 @@ int main(int argc, char **argv) {
 
     test_splitSmallFullTreeAtJoin();
     test_splitSmallFullTree();
+    test_splitLargePartialTree();
 
     printf("All tests ok.\n");
 }
@@ -196,4 +198,21 @@ static void test_splitSmallFullTree() {
 
     Rope_delete(left);
     Rope_delete(right);
+}
+
+static void test_splitLargePartialTree() {
+    Rope *a = Rope_join(Rope_join(Rope_newFrom("To "), Rope_newFrom("be ")),
+                        Rope_join(Rope_newFrom("or "), Rope_newFrom("not?")));
+    Rope *b = Rope_split(a, 3);
+
+    char *s = Rope_toString(a);
+    assert(strcmp(s, "To ") == 0);
+    free(s);
+
+    s = Rope_toString(b);
+    assert(strcmp(s, "be or not?") == 0);
+    free(s);
+
+    Rope_delete(a);
+    Rope_delete(b);
 }
