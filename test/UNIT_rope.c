@@ -10,26 +10,33 @@ static void test_sizeOfEmptyStringIsZero();
 static void test_sizeLeaf();
 static void test_sizeSmallFullTree();
 static void test_sizeSmallPartialTree();
+
 static void test_toStringOfEmptyRopeReturnsEmptyString();
 static void test_toStringOfLeaf();
 static void test_toStringOfSmallFullTree();
 static void test_toStringOfSmallPartialTree();
+
 static void test_splitAtOffset0LeafOnly();
 static void test_splitAtEndIsNoopLeafOnly();
 static void test_splitLastCharLeafOnly();
+static void test_splitSmallFullTreeAtJoin();
 
 int main(int argc, char **argv) {
     test_sizeOfEmptyStringIsZero();
     test_sizeLeaf();
     test_sizeSmallFullTree();
     test_sizeSmallPartialTree();
+
     test_toStringOfEmptyRopeReturnsEmptyString();
     test_toStringOfLeaf();
     test_toStringOfSmallFullTree();
     test_toStringOfSmallPartialTree();
+
     test_splitAtOffset0LeafOnly();
     test_splitAtEndIsNoopLeafOnly();
     test_splitLastCharLeafOnly();
+    test_splitSmallFullTreeAtJoin();
+
     printf("All tests ok.\n");
 }
 
@@ -153,4 +160,20 @@ static void test_splitLastCharLeafOnly() {
 
     Rope_delete(a);
     Rope_delete(b);
+}
+
+static void test_splitSmallFullTreeAtJoin() {
+    Rope *left = Rope_join(Rope_newFrom("12345"), Rope_newFrom("67890"));
+    Rope *right = Rope_split(left, 5);
+
+    char *s = Rope_toString(left);
+    assert(strcmp(s, "12345") == 0);
+    free(s);
+
+    s = Rope_toString(right);
+    assert(strcmp(s, "67890") == 0);
+    free(s);
+
+    Rope_delete(left);
+    Rope_delete(right);
 }

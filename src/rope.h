@@ -33,9 +33,10 @@ void Rope_delete(Rope *self);
  *
  * self is modified in place.
  *
- * Rope_split splits the rope from the character at offset p to the right.
- * If for example position is 0, the result will be a one character rope
- * to the left, and the rest of the rope to the right.
+ * Rope_split splits the rope after p characters counting from the left.
+ * Thus, spliting with p == 1 will split after the first character,
+ * and splitting with p == 0 will create an empty rope to the left and move
+ * the entire string to the right.
  *
  * A negative position will be considered an offset relative to the end of
  * the rope. So position -1 is the last character of the rope. */

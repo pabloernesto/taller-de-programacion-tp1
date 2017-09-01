@@ -106,11 +106,12 @@ static Rope *splitRecursive(Rope *self, int p) {
     if (BinaryTree_isLeaf(self)) return splitLeaf(self, p);
 
     if (p < getValue(self)) {
-        Rope *tmp = BinaryTree_extractRight(self);
-        return Rope_join(splitRecursive(BinaryTree_lchild(self), p),
-                         tmp);
-    } else if (p > getValue(self))
+        Rope *rchild = BinaryTree_extractRight(self);
+        Rope *left_result = splitRecursive(BinaryTree_lchild(self), p);
+        return Rope_join(left_result, rchild);
+    } else if (p > getValue(self)) {
         return splitRecursive(BinaryTree_rchild(self), p - getValue(self));
+    }
 
     return BinaryTree_extractRight(self);
 }
@@ -121,9 +122,9 @@ static Rope *splitLeaf(Rope *self, int p) {
     /* At or past the end of a string, this function is a no-op. */
     char *text = getText(self);
     int len = strlen(text);
-    if (p > len - 2) return NULL;
+    if (p > len - 1) return Rope_new();
 
-    Rope *ret = Rope_newFrom(text + p + 1);
+    Rope *ret = Rope_newFrom(text + p);
     text[p + 1] = '\0';
     return ret;
 }
