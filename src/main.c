@@ -1,24 +1,11 @@
 #include <stdio.h>
-#include "bintree.h"
+#include "socket.h"
 
 int main(int argc, char **argv) {
-    char *string1 = "Hello";
-    char *string2 = "World!";
+    int s = Socket_socket();
 
-    BinaryTree *tree = BinaryTree_new(string1, NULL, NULL);
-    BinaryTree_newRight(tree, string2);
+    if (s == -1) printf("-1\n");
+    else printf("%d\n", s);
 
-    /*        Hello
-     *      /      \
-     * NULL         World!
-     *
-     */
-
-    BinaryTree *root = tree;
-    BinaryTree *child = BinaryTree_rchild(tree);
-
-    printf("%s %s\n", (char *) BinaryTree_getLiveContent(root),
-                      (char *) BinaryTree_getLiveContent(child));
-
-    BinaryTree_delete(tree, noOP);
+    Socket_close(s);
 }
