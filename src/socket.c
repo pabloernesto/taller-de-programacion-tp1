@@ -47,9 +47,11 @@ const char *Socket_gai_strerror(int errcode) {
 }
 
 int _send(int fd, const char *buf, int len, struct _send_s in) {
+
     do {
-        int n = sendto(fd, buf, len, in.flags, in.dest.ai_addr,
-                in.dest.ai_addrlen);
+        int n = sendto(fd, buf, len, in.flags,
+                in.dest ? in.dest->ai_addr : NULL,
+                in.dest ? in.dest->ai_addrlen : 0);
         if (n == -1) return -1;
         buf += n;
         len -= n;

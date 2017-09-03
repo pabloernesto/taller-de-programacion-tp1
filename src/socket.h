@@ -131,11 +131,10 @@ const char *Socket_gai_strerror(int errcode);
  * and 0 is returned. On error, -1 is returned, and errno is set appropriately.
  *
  * If Socket_send is used on a connection-mode (SOCK_STREAM, SOCK_SEQPACKET)
- * socket, the arguments dest_addr and addrlen are ignored (and the error
- * EISCONN may be returned when they are not NULL and 0), and the error
- * ENOTCONN is returned when the socket was not actually connected.
- * Otherwise, the address of the target is given by dest_addr with addrlen
- * specifying its size.
+ * socket, the argument dest is ignored (and the error EISCONN may be returned
+ * when it is not NULL), and the error ENOTCONN is returned when the socket
+ * was not actually connected. Otherwise, the address of the target is given
+ * by addr.
  *
  * name         default
  * ====         =======
@@ -162,7 +161,7 @@ struct _getaddinfo_s { const char *node; const char *service;
     int ai_flags, ai_family, ai_socktype, ai_protocol; };
 int _getaddrinfo(addrinfo_s **res, struct _getaddinfo_s in);
 
-struct _send_s { int flags; addrinfo_s dest; };
+struct _send_s { int flags; addrinfo_s *dest; };
 int _send(int fd, const char *buf, int len, struct _send_s in);
 
 #endif
