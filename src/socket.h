@@ -17,7 +17,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 
-typedef struct addrinfo xxx;
+typedef struct addrinfo addrinfo_s;
 
 /******************************************************************************/
 /* Opening and closing sockets. */
@@ -59,7 +59,7 @@ int Socket_close(int fd);
  * and representing the address of the remote endpoint of the communication.
  *
  * addr MUST NOT be NULL. If that is the case, behaviour is undefined. */
-int Socket_connect(int fd, xxx *addr);
+int Socket_connect(int fd, addrinfo_s *addr);
 
 /* Binds a socket to the specified address.
  *
@@ -68,7 +68,7 @@ int Socket_connect(int fd, xxx *addr);
  *
  * On success, zero is returned. On error, -1 is returned, and errno
  * is set appropriately. */
-int Socket_bind(int fd, xxx *addr);
+int Socket_bind(int fd, addrinfo_s *addr);
 
 /* Listen for connections on a socket.
  *
@@ -138,6 +138,6 @@ int _listen(int fd, struct _listen_s in);
 
 struct _getaddinfo_s { const char *node; const char *service;
     int ai_flags, ai_family, ai_socktype, ai_protocol; };
-int _getaddrinfo(xxx **res, struct _getaddinfo_s in);
+int _getaddrinfo(addrinfo_s **res, struct _getaddinfo_s in);
 
 #endif
