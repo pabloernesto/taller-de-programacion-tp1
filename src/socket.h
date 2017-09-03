@@ -3,10 +3,10 @@
  * The wrapper functions add only syntactic sugar (and the documentation is
  * consecuently limited to a catalogue of defaults) unless explicity noted.
  *
- * To override a macro's defaults when calling it, add the following
- * as a parameter: .parameterName=parameterValue
- * For example, when calling Socket_socket with raw network access, instead
- * of the default TCP stream, call it as Socket_socket(.type=SOCK_RAW) */
+ * To override a macro's defaults, add the following as a parameter to the call:
+ *     .parameterName=parameterValue
+ * For example, when creating a socket with raw network access, instead of the
+ * default TCP stream, call Socket_socket(.type=SOCK_RAW) */
 
 #ifndef SOCKET_H
 #define SOCKET_H
@@ -123,7 +123,6 @@ void Socket_freeaddrinfo(xxx *res);
 const char *Socket_gai_strerror(int errcode);
 
 /******************************************************************************/
-
 /* For macro use only. It is possible, but adviced against, to manually handle
  * these functions and structures. */
 
