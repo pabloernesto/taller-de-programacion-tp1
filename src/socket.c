@@ -45,3 +45,14 @@ void Socket_freeaddrinfo(struct addrinfo *res) {
 const char *Socket_gai_strerror(int errcode) {
     return gai_strerror(errcode);
 }
+
+int _send(int fd, const char *buf, int len, struct _send_s in) {
+    do {
+        int n = sendto(fd, buf, len, in.flags, in.dest.ai_addr,
+                in.dest.ai_addrlen);
+        if (n == -1) return -1;
+        buf += n;
+        len -= n;
+    } while (len > 0);
+    return 0;
+}
