@@ -44,7 +44,7 @@ struct accept_s _accept(struct accept_s in) {
     socklen_t len;
     int ret = accept(in.fd, &addr, &len);
     return (struct accept_s){
-        .error = (ret ? -1 : 0),
+        .error = (ret < 0) ? -1 : 0,
         .fd = ret,
         .addr = addr,
         .addrlen = len
