@@ -194,8 +194,9 @@ struct accept_s {
 
 /* Sends a message on a socket.
  *
- * On success, len characters are written from the buffer into the socket
- * and 0 is returned. On error, -1 is returned, and errno is set appropriately.
+ * On success, the number of characters written is returned. If this number is
+ * less than len, the socket was shut down while transmitting. On error,
+ * -1 is returned, and errno is set appropriately.
  *
  * fd is a mandatory argument, and must be a valid file descriptor.
  *
