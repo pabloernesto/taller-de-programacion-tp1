@@ -217,8 +217,8 @@ struct accept_s {
  * flags        0
  * dest         NULL
  */
-#define Socket_send(...) _send(fd, buf, len, (struct _send_s){ \
-    .fd=-1, .buf=NULL, .len=0, .flags=0, .dest=NULL, __VA_ARGS__ }
+#define Socket_send(...) _send((struct _send_s){ .fd=-1, .buf=NULL, .len=0,\
+    .flags=0, .dest=NULL, __VA_ARGS__ })
 
 /******************************************************************************/
 /* For macro use only. It is possible, but adviced against, to manually handle
