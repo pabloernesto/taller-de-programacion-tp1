@@ -220,6 +220,9 @@ struct accept_s {
 #define Socket_send(...) _send((struct _send_s){ .fd=-1, .buf=NULL, .len=0,\
     .flags=0, .dest=NULL, __VA_ARGS__ })
 
+#define Socket_recv(...) _recv((struct _recv_s){ .fd=-1, .buf=NULL, .len=0,\
+    .flags=0, __VA_ARGS__ })
+
 /******************************************************************************/
 /* For macro use only. It is possible, but adviced against, to manually handle
  * these functions and structures. */
@@ -254,7 +257,10 @@ void _freeaddrinfo(struct _freeaddrinfo_s in);
 struct _gai_strerror_s { int errcode; };
 const char *_gai_strerror(struct _gai_strerror_s in);
 
-struct _send_s { int fd, flags, len; char *buf; struct addrinfo *dest; };
+struct _send_s { int fd, flags, len; void *buf; struct addrinfo *dest; };
 int _send(struct _send_s in);
+
+struct _recv_s { int fd, len, flags; void *buf; };
+int _recv(struct _recv_s in);
 
 #endif

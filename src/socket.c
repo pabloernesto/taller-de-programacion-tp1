@@ -71,12 +71,24 @@ const char *_gai_strerror(struct _gai_strerror_s in) {
 }
 
 int _send(struct _send_s in) {
+    char *p = in.buf;
     do {
-        int n = sendto(in.fd, in.buf, in.len, in.flags,
+        int n = sendto(in.fd, p, in.len, in.flags,
                 in.dest ? in.dest->ai_addr : NULL,
                 in.dest ? in.dest->ai_addrlen : 0);
         if (n == -1) return -1;
-        in.buf += n;
+        p += n;
+        in.len -= n;
+    } while (in.len > 0);
+    return 0;
+}
+
+int _recv(struct _recv_s in) {
+    char *p = in.buf;
+    do {
+        int n = recv(in.fd, p, in.len, in.flags);
+        if (n == -1) return -1;
+        p += n;
         in.len -= n;
     } while (in.len > 0);
     return 0;
