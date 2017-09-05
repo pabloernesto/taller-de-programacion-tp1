@@ -68,14 +68,14 @@ static void test_sizeOfEmptyStringIsZero() {
     Rope *r = Rope_new();
     assert(Rope_size(r) == 0);
 
-    Rope_delete(r);
+    Rope_destroy(r);
 }
 
 static void test_sizeLeaf() {
     Rope *r = Rope_newFrom("123456");
     assert(Rope_size(r) == 6);
 
-    Rope_delete(r);
+    Rope_destroy(r);
 }
 
 static void test_sizeSmallFullTree() {
@@ -84,7 +84,7 @@ static void test_sizeSmallFullTree() {
     Rope *r = Rope_join(left, right);
     assert(Rope_size(r) == 10);
 
-    Rope_delete(r);
+    Rope_destroy(r);
 }
 
 static void test_sizeSmallPartialTree() {
@@ -94,7 +94,7 @@ static void test_sizeSmallPartialTree() {
     Rope *r = Rope_join(Rope_join(t1, t2), t3);
     assert(Rope_size(r) == 9);
 
-    Rope_delete(r);
+    Rope_destroy(r);
 }
 
 static void test_toStringOfEmptyRopeReturnsEmptyString() {
@@ -102,7 +102,7 @@ static void test_toStringOfEmptyRopeReturnsEmptyString() {
     char *s = Rope_toString(r);
     assert(strcmp("", s) == 0);
 
-    Rope_delete(r);
+    Rope_destroy(r);
     free(s);
 }
 
@@ -111,7 +111,7 @@ static void test_toStringOfLeaf() {
     char *s = Rope_toString(r);
     assert(strcmp(s, "123456") == 0);
 
-    Rope_delete(r);
+    Rope_destroy(r);
     free(s);
 }
 
@@ -122,7 +122,7 @@ static void test_toStringOfSmallFullTree() {
     char *s = Rope_toString(r);
     assert(strcmp(s, "1234567890") == 0);
 
-    Rope_delete(r);
+    Rope_destroy(r);
     free(s);
 }
 
@@ -134,7 +134,7 @@ static void test_toStringOfSmallPartialTree() {
     char *s = Rope_toString(r);
     assert(strcmp(s, "123456789") == 0);
 
-    Rope_delete(r);
+    Rope_destroy(r);
     free(s);
 }
 
@@ -152,8 +152,8 @@ static void test_splitAtOffset0LeafOnly() {
     assert(strcmp("Hello World!", s) == 0);
     free(s);
 
-    Rope_delete(a);
-    Rope_delete(b);
+    Rope_destroy(a);
+    Rope_destroy(b);
 }
 
 static void test_splitAtOffset1LeafOnly() {
@@ -170,8 +170,8 @@ static void test_splitAtOffset1LeafOnly() {
     assert(strcmp("ello World!", s) == 0);
     free(s);
 
-    Rope_delete(a);
-    Rope_delete(b);
+    Rope_destroy(a);
+    Rope_destroy(b);
 }
 
 static void test_splitAtEndIsNoopLeafOnly() {
@@ -188,8 +188,8 @@ static void test_splitAtEndIsNoopLeafOnly() {
     assert(strcmp("", s) == 0);
     free(s);
 
-    Rope_delete(a);
-    Rope_delete(b);
+    Rope_destroy(a);
+    Rope_destroy(b);
 }
 
 static void test_splitLastCharLeafOnly() {
@@ -206,8 +206,8 @@ static void test_splitLastCharLeafOnly() {
     assert(strcmp("!", s) == 0);
     free(s);
 
-    Rope_delete(a);
-    Rope_delete(b);
+    Rope_destroy(a);
+    Rope_destroy(b);
 }
 
 static void test_splitSmallFullTreeAtJoin() {
@@ -224,8 +224,8 @@ static void test_splitSmallFullTreeAtJoin() {
     assert(strcmp(s, "67890") == 0);
     free(s);
 
-    Rope_delete(left);
-    Rope_delete(right);
+    Rope_destroy(left);
+    Rope_destroy(right);
 }
 
 static void test_splitSmallFullTree() {
@@ -240,8 +240,8 @@ static void test_splitSmallFullTree() {
     assert(strcmp(s, "234567890") == 0);
     free(s);
 
-    Rope_delete(left);
-    Rope_delete(right);
+    Rope_destroy(left);
+    Rope_destroy(right);
 }
 
 static void test_splitAt0LargePartialTree() {
@@ -259,8 +259,8 @@ static void test_splitAt0LargePartialTree() {
     assert(strcmp(s, "To be or not?") == 0);
     free(s);
 
-    Rope_delete(a);
-    Rope_delete(b);
+    Rope_destroy(a);
+    Rope_destroy(b);
 }
 
 static void test_splitLargePartialTree() {
@@ -276,8 +276,8 @@ static void test_splitLargePartialTree() {
     assert(strcmp(s, "be or not?") == 0);
     free(s);
 
-    Rope_delete(a);
-    Rope_delete(b);
+    Rope_destroy(a);
+    Rope_destroy(b);
 }
 
 static void test_splitLargePartialTreeAndLeaf() {
@@ -293,8 +293,8 @@ static void test_splitLargePartialTreeAndLeaf() {
     assert(strcmp(s, "r not?") == 0);
     free(s);
 
-    Rope_delete(a);
-    Rope_delete(b);
+    Rope_destroy(a);
+    Rope_destroy(b);
 }
 
 static void test_insertAt0InEmptyRope() {
@@ -305,7 +305,7 @@ static void test_insertAt0InEmptyRope() {
     assert(strcmp(s, "Hello") == 0);
     free(s);
 
-    Rope_delete(r);
+    Rope_destroy(r);
 }
 
 static void test_insertAtEndInEmptyRope() {
@@ -316,7 +316,7 @@ static void test_insertAtEndInEmptyRope() {
     assert(strcmp(s, "Hello") == 0);
     free(s);
 
-    Rope_delete(r);
+    Rope_destroy(r);
 }
 
 static void test_insertAt0InLargePartialTree() {
@@ -328,7 +328,7 @@ static void test_insertAt0InLargePartialTree() {
     assert(strcmp(s, "To be or not?") == 0);
     free(s);
 
-    Rope_delete(r);
+    Rope_destroy(r);
 }
 
 static void test_insertAtEndInLargePartialTree() {
@@ -340,7 +340,7 @@ static void test_insertAtEndInLargePartialTree() {
     assert(strcmp(s, "To be or not?") == 0);
     free(s);
 
-    Rope_delete(r);
+    Rope_destroy(r);
 }
 
 static void test_insertInTheMiddleInLargePartialTree() {
@@ -352,5 +352,5 @@ static void test_insertInTheMiddleInLargePartialTree() {
     assert(strcmp(s, "To be or not?") == 0);
     free(s);
 
-    Rope_delete(r);
+    Rope_destroy(r);
 }

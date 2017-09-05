@@ -24,7 +24,7 @@ Rope *Rope_new();
  * dependent. */
 Rope *Rope_newFrom(const char *text);
 
-void Rope_delete(Rope *self);
+void Rope_destroy(Rope *self);
 
 Rope *Rope_insert(Rope *self, int pos, const char *text);
 

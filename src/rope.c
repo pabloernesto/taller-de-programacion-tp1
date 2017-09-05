@@ -34,7 +34,7 @@ Rope *Rope_newFrom(const char *text) {
     return BinaryTree_new(c, NULL, NULL);
 }
 
-void Rope_delete(Rope *self) {
+void Rope_destroy(Rope *self) {
     BinaryTree_delete(self, deleteContent);
 }
 
@@ -52,12 +52,12 @@ Rope *Rope_split(Rope *self, int p) {
 Rope *Rope_join(Rope *l_rope, Rope *r_rope) {
     /* If either rope is empty, delete it and return the other. */
     if (0 == getValue(l_rope)) {
-        Rope_delete(l_rope);
+        Rope_destroy(l_rope);
         return r_rope;
     }
 
     if (0 == getValue(r_rope)) {
-        Rope_delete(r_rope);
+        Rope_destroy(r_rope);
         return l_rope;
     }
 
