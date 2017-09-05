@@ -22,9 +22,11 @@ Rope *Rope_new();
  *
  * If text is a null pointer, the behaviour of the program is implementation
  * dependent. */
-Rope *Rope_newFrom(char *text);
+Rope *Rope_newFrom(const char *text);
 
 void Rope_delete(Rope *self);
+
+Rope *Rope_insert(Rope *self, int pos, const char *text);
 
 /* Given a position p, separate self in two.
  *

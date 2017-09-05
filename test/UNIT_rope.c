@@ -25,6 +25,8 @@ static void test_splitSmallFullTree();
 static void test_splitLargePartialTree();
 static void test_splitLargePartialTreeAndLeaf();
 
+static void test_insertAt0InEmptyRope();
+
 int main(int argc, char **argv) {
     test_sizeOfEmptyStringIsZero();
     test_sizeLeaf();
@@ -44,6 +46,8 @@ int main(int argc, char **argv) {
     test_splitSmallFullTree();
     test_splitLargePartialTree();
     test_splitLargePartialTreeAndLeaf();
+
+    test_insertAt0InEmptyRope();
 
     printf("All tests ok.\n");
 }
@@ -234,4 +238,15 @@ static void test_splitLargePartialTreeAndLeaf() {
 
     Rope_delete(a);
     Rope_delete(b);
+}
+
+static void test_insertAt0InEmptyRope() {
+    Rope *r = Rope_new();
+    r = Rope_insert(r, 0, "Hello");
+
+    char *s = Rope_toString(r);
+    assert(strcmp(s, "Hello") == 0);
+    free(s);
+
+    Rope_delete(r);
 }

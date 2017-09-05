@@ -21,14 +21,10 @@ static char *getText(const Rope *self);
 static void toStringRecurse(const Rope *self, char *s);
 
 Rope *Rope_new() {
-    RopeContent *c = (RopeContent *) malloc(sizeof(RopeContent));
-    assert(c != NULL);
-
-    *c = (RopeContent) { .value = 0 };
-    return BinaryTree_new(c, NULL, NULL);
+    return Rope_newFrom("");
 }
 
-Rope *Rope_newFrom(char *text) {
+Rope *Rope_newFrom(const char *text) {
     RopeContent *c = (RopeContent *) malloc(sizeof(RopeContent));
     assert(c != NULL);
 
@@ -40,6 +36,11 @@ Rope *Rope_newFrom(char *text) {
 
 void Rope_delete(Rope *self) {
     BinaryTree_delete(self, deleteContent);
+}
+
+Rope *Rope_insert(Rope *self, int pos, const char *text) {
+    Rope *right = Rope_split(self, pos);
+    return Rope_join(self, Rope_join(Rope_newFrom(text), right));
 }
 
 Rope *Rope_split(Rope *self, int p) {
