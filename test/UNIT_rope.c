@@ -30,6 +30,7 @@ static void test_splitLargePartialTreeAndLeaf();
 static void test_insertAt0InEmptyRope();
 static void test_insertAtEndInEmptyRope();
 static void test_insertAt0InLargePartialTree();
+static void test_insertAtEndInLargePartialTree();
 
 int main(int argc, char **argv) {
     test_sizeOfEmptyStringIsZero();
@@ -56,6 +57,7 @@ int main(int argc, char **argv) {
     test_insertAt0InEmptyRope();
     test_insertAtEndInEmptyRope();
     test_insertAt0InLargePartialTree();
+    test_insertAtEndInLargePartialTree();
 
     printf("All tests ok.\n");
 }
@@ -319,6 +321,18 @@ static void test_insertAt0InLargePartialTree() {
     Rope *r = Rope_join(Rope_join(Rope_newFrom("o "), Rope_newFrom("be ")),
                         Rope_join(Rope_newFrom("or "), Rope_newFrom("not?")));
     r = Rope_insert(r, 0, "T");
+
+    char *s = Rope_toString(r);
+    assert(strcmp(s, "To be or not?") == 0);
+    free(s);
+
+    Rope_delete(r);
+}
+
+static void test_insertAtEndInLargePartialTree() {
+    Rope *r = Rope_join(Rope_join(Rope_newFrom("To "), Rope_newFrom("be ")),
+                        Rope_join(Rope_newFrom("or "), Rope_newFrom("not")));
+    r = Rope_insert(r, -1, "?");
 
     char *s = Rope_toString(r);
     assert(strcmp(s, "To be or not?") == 0);
