@@ -1,4 +1,4 @@
-/* Clean wrappers around the Linux socket interface.
+/* Variadic wrappers around the Linux socket interface.
  *
  * Prerrequisites. (order is important)
  *     #define _POSIX_C_SOURCE >= 201112L
