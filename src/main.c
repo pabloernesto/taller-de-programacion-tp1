@@ -23,8 +23,8 @@ int main(int argc, char **argv) {
 }
 
 static void printHelp() {
-    printf("./tp​ ​server​ ​[<port>]\n"
-           "./tp​ ​ client​ ​ <host>​ ​ <port>​ ​ [<input>]\n");
+    printf("./tp server [<port>]\n"
+           "./tp client <host> <port> [<inputfile>]\n");
 }
 
 static void serve(int argc, char **argv) {
