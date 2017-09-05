@@ -108,7 +108,10 @@ static Rope *splitRecursive(Rope *self, int p) {
 
     if (p < getValue(self)) {
         Rope *rchild = BinaryTree_extractRight(self);
+
+        int original_value = getValue(self);
         Rope *left_result = splitRecursive(BinaryTree_lchild(self), p);
+        setValue(self, original_value - Rope_size(left_result));
         return Rope_join(left_result, rchild);
     } else if (p > getValue(self)) {
         return splitRecursive(BinaryTree_rchild(self), p - getValue(self));
@@ -126,6 +129,7 @@ static Rope *splitLeaf(Rope *self, int p) {
 
     Rope *ret = Rope_newFrom(text + p);
     text[p] = '\0';
+    setValue(self, strlen(text));
     return ret;
 }
 

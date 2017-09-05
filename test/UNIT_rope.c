@@ -16,17 +16,20 @@ static void test_toStringOfLeaf();
 static void test_toStringOfSmallFullTree();
 static void test_toStringOfSmallPartialTree();
 
+static void test_splitAtOffset0LeafOnly();
 static void test_splitAtOffset1LeafOnly();
 static void test_splitAtEndIsNoopLeafOnly();
 static void test_splitLastCharLeafOnly();
 
 static void test_splitSmallFullTreeAtJoin();
 static void test_splitSmallFullTree();
+static void test_splitAt0LargePartialTree();
 static void test_splitLargePartialTree();
 static void test_splitLargePartialTreeAndLeaf();
 
 static void test_insertAt0InEmptyRope();
 static void test_insertAtEndInEmptyRope();
+static void test_insertAt0InLargePartialTree();
 
 int main(int argc, char **argv) {
     test_sizeOfEmptyStringIsZero();
@@ -39,17 +42,20 @@ int main(int argc, char **argv) {
     test_toStringOfSmallFullTree();
     test_toStringOfSmallPartialTree();
 
+    test_splitAtOffset0LeafOnly();
     test_splitAtOffset1LeafOnly();
     test_splitAtEndIsNoopLeafOnly();
     test_splitLastCharLeafOnly();
 
     test_splitSmallFullTreeAtJoin();
     test_splitSmallFullTree();
+    test_splitAt0LargePartialTree();
     test_splitLargePartialTree();
     test_splitLargePartialTreeAndLeaf();
 
     test_insertAt0InEmptyRope();
     test_insertAtEndInEmptyRope();
+    test_insertAt0InLargePartialTree();
 
     printf("All tests ok.\n");
 }
@@ -128,14 +134,34 @@ static void test_toStringOfSmallPartialTree() {
     free(s);
 }
 
+static void test_splitAtOffset0LeafOnly() {
+    Rope *a = Rope_newFrom("Hello World!");
+    Rope *b = Rope_split(a, 0);
+
+    assert(Rope_size(a) == 0);
+    char *s = Rope_toString(a);
+    assert(strcmp("", s) == 0);
+    free(s);
+
+    assert(Rope_size(b) == 12);
+    s = Rope_toString(b);
+    assert(strcmp("Hello World!", s) == 0);
+    free(s);
+
+    Rope_delete(a);
+    Rope_delete(b);
+}
+
 static void test_splitAtOffset1LeafOnly() {
     Rope *a = Rope_newFrom("Hello World!");
     Rope *b = Rope_split(a, 1);
 
+    assert(Rope_size(a) == 1);
     char *s = Rope_toString(a);
     assert(strcmp("H", s) == 0);
     free(s);
 
+    assert(Rope_size(b) == 11);
     s = Rope_toString(b);
     assert(strcmp("ello World!", s) == 0);
     free(s);
@@ -148,10 +174,12 @@ static void test_splitAtEndIsNoopLeafOnly() {
     Rope *a = Rope_newFrom("Hello World!");
     Rope *b = Rope_split(a, -1);
 
+    assert(Rope_size(a) == 12);
     char *s = Rope_toString(a);
     assert(strcmp("Hello World!", s) == 0);
     free(s);
 
+    assert(Rope_size(b) == 0);
     s = Rope_toString(b);
     assert(strcmp("", s) == 0);
     free(s);
@@ -164,10 +192,12 @@ static void test_splitLastCharLeafOnly() {
     Rope *a = Rope_newFrom("Hello World!");
     Rope *b = Rope_split(a, -2);
 
+    assert(Rope_size(a) == 11);
     char *s = Rope_toString(a);
     assert(strcmp("Hello World", s) == 0);
     free(s);
 
+    assert(Rope_size(b) == 1);
     s = Rope_toString(b);
     assert(strcmp("!", s) == 0);
     free(s);
@@ -180,10 +210,12 @@ static void test_splitSmallFullTreeAtJoin() {
     Rope *left = Rope_join(Rope_newFrom("12345"), Rope_newFrom("67890"));
     Rope *right = Rope_split(left, 5);
 
+    assert(Rope_size(left) == 5);
     char *s = Rope_toString(left);
     assert(strcmp(s, "12345") == 0);
     free(s);
 
+    assert(Rope_size(right) == 5);
     s = Rope_toString(right);
     assert(strcmp(s, "67890") == 0);
     free(s);
@@ -206,6 +238,25 @@ static void test_splitSmallFullTree() {
 
     Rope_delete(left);
     Rope_delete(right);
+}
+
+static void test_splitAt0LargePartialTree() {
+    Rope *a = Rope_join(Rope_join(Rope_newFrom("To "), Rope_newFrom("be ")),
+                        Rope_join(Rope_newFrom("or "), Rope_newFrom("not?")));
+    Rope *b = Rope_split(a, 0);
+
+    assert(Rope_size(a) == 0);
+    char *s = Rope_toString(a);
+    assert(strcmp(s, "") == 0);
+    free(s);
+
+    assert(Rope_size(b) == 13);
+    s = Rope_toString(b);
+    assert(strcmp(s, "To be or not?") == 0);
+    free(s);
+
+    Rope_delete(a);
+    Rope_delete(b);
 }
 
 static void test_splitLargePartialTree() {
@@ -259,6 +310,18 @@ static void test_insertAtEndInEmptyRope() {
 
     char *s = Rope_toString(r);
     assert(strcmp(s, "Hello") == 0);
+    free(s);
+
+    Rope_delete(r);
+}
+
+static void test_insertAt0InLargePartialTree() {
+    Rope *r = Rope_join(Rope_join(Rope_newFrom("o "), Rope_newFrom("be ")),
+                        Rope_join(Rope_newFrom("or "), Rope_newFrom("not?")));
+    r = Rope_insert(r, 0, "T");
+
+    char *s = Rope_toString(r);
+    assert(strcmp(s, "To be or not?") == 0);
     free(s);
 
     Rope_delete(r);
