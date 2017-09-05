@@ -169,13 +169,13 @@ struct accept_s {
  * ai_socktype  SOCK_STREAM
  *
  * Usage example:
- *     struct addrinfo *res;
- *     int errcode = Socket_getaddrinfo(.res=res);
+ *     struct addrinfo *address;
+ *     int errcode = Socket_getaddrinfo(.res=&address);
  *     if (errcode) return Socket_gai_strerror(errcode);
  *
- *     // Use *res, or *(res->ai_next), or *(res->ai_next->ai_next)...
+ *     // Use *res, or *(address->ai_next), or *(address->ai_next->ai_next)...
  *
- *     Socket_freeaddrinfo(res);
+ *     Socket_freeaddrinfo(address);
  */
 #define Socket_getaddrinfo(...) _getaddrinfo((struct _getaddinfo_s){ .res=NULL,\
     .service="8080", .ai_flags=AI_PASSIVE, .ai_family=AF_INET,                 \
