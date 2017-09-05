@@ -49,7 +49,7 @@ Rope *Rope_insert(Rope *self, int pos, const char *text) {
 Rope *Rope_delete(Rope *self, int begin, int end) {
     if (begin < 0) begin += Rope_size(self) + 1;
     if (end < 0) end += Rope_size(self) + 1;
-    assert((begin >= 0) && (end >= 0));
+    assert((begin >= 0) && (end >= 0) && (begin <= end));
 
     Rope *last = Rope_split(self, end);
     Rope *middle = Rope_split(self, begin);
