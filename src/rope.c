@@ -43,6 +43,15 @@ Rope *Rope_insert(Rope *self, int pos, const char *text) {
     return Rope_join(self, Rope_join(Rope_newFrom(text), right));
 }
 
+Rope *Rope_delete(Rope *self, int begin, int end) {
+    Rope *last = Rope_split(self, end);
+    Rope *middle = Rope_split(self, begin);
+
+    Rope_destroy(middle);
+
+    return Rope_join(self, last);
+}
+
 Rope *Rope_split(Rope *self, int p) {
     if (p < 0) p += Rope_size(self) + 1;
     assert(p >= 0);

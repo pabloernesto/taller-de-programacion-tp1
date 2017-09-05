@@ -28,6 +28,8 @@ void Rope_destroy(Rope *self);
 
 Rope *Rope_insert(Rope *self, int pos, const char *text);
 
+Rope *Rope_delete(Rope *self, int begin, int end);
+
 /* Given a position p, separate self in two.
  *
  * On success, a pointer to the right side rope is returned. On error,
