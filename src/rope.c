@@ -39,11 +39,18 @@ void Rope_destroy(Rope *self) {
 }
 
 Rope *Rope_insert(Rope *self, int pos, const char *text) {
+    if (pos < 0) pos += Rope_size(self) + 1;
+    assert(pos >= 0);
+
     Rope *right = Rope_split(self, pos);
     return Rope_join(self, Rope_join(Rope_newFrom(text), right));
 }
 
 Rope *Rope_delete(Rope *self, int begin, int end) {
+    if (begin < 0) begin += Rope_size(self) + 1;
+    if (end < 0) end += Rope_size(self) + 1;
+    assert((begin >= 0) && (end >= 0));
+
     Rope *last = Rope_split(self, end);
     Rope *middle = Rope_split(self, begin);
 
@@ -55,6 +62,7 @@ Rope *Rope_delete(Rope *self, int begin, int end) {
 Rope *Rope_split(Rope *self, int p) {
     if (p < 0) p += Rope_size(self) + 1;
     assert(p >= 0);
+
     return splitRecursive(self, p);
 }
 
