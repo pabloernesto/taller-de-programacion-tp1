@@ -14,6 +14,7 @@ static void printHelp();
 static void serverRoutine(int argc, char **argv);
 static void clientRoutine(int argc, char **argv);
 
+static void clientLoop(int connection, FILE *input);
 static int createListeningSocket(char *port);
 static int createConnection(char *node, char *service);
 static void echoSocket(const int fd);
@@ -51,12 +52,21 @@ static void serverRoutine(int argc, char **argv) {
 static void clientRoutine(int argc, char **argv) {
     if ((argc < 4) || (argc > 5)) { printHelp(); exit(1); }
 
+    FILE *input = argv[4] ? fopen(argv[4], "r") : stdin;
+    if (input == NULL) { perror("Could not open file"); exit(1); }
+
     int connection = createConnection(argv[2], argv[3]);
 
-    char s[] = "Hi";
-    Socket_send(.fd=connection, .buf=s, .len=strlen(s));
+    clientLoop(connection, input);
+
     Socket_shutdown(.fd=connection);
     Socket_close(.fd=connection);
+    fclose(input);
+}
+
+static void clientLoop(int connection, FILE *input) {
+    char s[] = "Hi";
+    Socket_send(.fd=connection, .buf=s, .len=strlen(s));
 }
 
 static int createListeningSocket(char *port) {
