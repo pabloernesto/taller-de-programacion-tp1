@@ -19,6 +19,8 @@ static int createListeningSocket(char *port);
 static int createConnection(char *node, char *service);
 static void echoSocket(const int fd);
 
+static void sendPrint(int connection);
+
 int main(int argc, char **argv) {
     if (argc < 2) { printHelp(); exit(0); }
 
@@ -67,7 +69,13 @@ static void clientRoutine(int argc, char **argv) {
 static void clientLoop(int connection, FILE *input) {
     char *s;
     while (fscanf(input, "%ms", &s) != EOF) {
-        Socket_send(.fd=connection, .buf=s, .len=strlen(s));
+        if (strcmp("print", s) == 0) {
+            sendPrint(connection);
+        } else {
+            fprintf(stderr, "Unknown command: %s", s);
+            exit(1);
+        }
+
         free(s);
     }
 }
@@ -120,4 +128,9 @@ static int createConnection(char *node, char *service) {
 
     Socket_freeaddrinfo(.res=address);
     return connection;
+}
+
+static void sendPrint(int connection) {
+    char s[] = "print";
+    Socket_send(.fd=connection, .buf=s, .len=strlen(s));
 }
