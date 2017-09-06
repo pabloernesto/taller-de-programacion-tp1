@@ -15,7 +15,7 @@ static void serverRoutine(int argc, char **argv);
 static void clientRoutine(int argc, char **argv);
 
 static int createListeningSocket(char *port);
-//~ static int createConnection(char *node, char *service);
+static int createConnection(char *node, char *service);
 static void echoSocket(const int fd);
 
 int main(int argc, char **argv) {
@@ -51,7 +51,12 @@ static void serverRoutine(int argc, char **argv) {
 static void clientRoutine(int argc, char **argv) {
     if ((argc < 4) || (argc > 5)) { printHelp(); exit(1); }
 
-    //~ int connection = createConnection(argv[2], argv[3]);
+    int connection = createConnection(argv[2], argv[3]);
+
+    char s[] = "Hi";
+    Socket_send(.fd=connection, .buf=s, .len=strlen(s));
+    Socket_shutdown(.fd=connection);
+    Socket_close(.fd=connection);
 }
 
 static int createListeningSocket(char *port) {
@@ -86,16 +91,20 @@ static void echoSocket(const int connection) {
     #undef SIZE
 }
 
-//~ static int createConnection(char *node, char *service) {
-    //~ struct addrinfo *address;
-    //~ int errcode = Socket_getaddrinfo(.res=&address, .node=node,
-                                     //~ .service=service);
-    //~ if (errcode) { perror("Could not get remote address."); exit(1);}
+static int createConnection(char *node, char *service) {
+    struct addrinfo *address;
+    int errcode = Socket_getaddrinfo(.res=&address, .node=node,
+                                     .service=service);
+    if (errcode) { perror("Could not get remote address"); exit(1);}
 
-    //~ int connection = Socket_socket();
-    //~ Socket_connect(address);
+    int connection = Socket_socket();
+    if (connection == -1) { perror("Could not open socket"); exit(1); }
 
-    //~ Socket_freeaddrinfo(res);
+    if (Socket_connect(.fd=connection, .addr=address) == -1) {
+        perror("Could not connect");
+        exit(1);
+    }
 
-    //~ return address;
-//~ }
+    Socket_freeaddrinfo(.res=address);
+    return connection;
+}
