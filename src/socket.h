@@ -91,7 +91,8 @@
  * and representing the address of the remote endpoint of the communication.
  *
  * addr MUST NOT be NULL. If that is the case, behaviour is undefined. */
-#define Socket_connect(...) _connect(struct _connect_s){ .fd=-1, __VA_ARGS__ });
+#define Socket_connect(...) _connect((struct _connect_s){ .fd=-1,\
+    __VA_ARGS__ });
 
 /* Binds a socket to the specified address.
  *
