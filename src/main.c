@@ -11,15 +11,18 @@
 #include <string.h>
 
 static void printHelp();
-static void serve(int argc, char **argv);
+static void serverRoutine(int argc, char **argv);
+static void clientRoutine(int argc, char **argv);
+
 static int createListeningSocket(char *port);
+//~ static int createConnection(char *node, char *service);
 static void echoSocket(const int fd);
 
 int main(int argc, char **argv) {
     if (argc < 2) { printHelp(); exit(0); }
 
-    if (strcmp(argv[1], "server") == 0) serve(argc, argv);
-    //if (strcmp(argv[1], "client") == 0) connect(argc, argv);
+    if (strcmp(argv[1], "server") == 0) serverRoutine(argc, argv);
+    if (strcmp(argv[1], "client") == 0) clientRoutine(argc, argv);
 }
 
 static void printHelp() {
@@ -27,7 +30,7 @@ static void printHelp() {
            "./tp client <host> <port> [<inputfile>]\n");
 }
 
-static void serve(int argc, char **argv) {
+static void serverRoutine(int argc, char **argv) {
     if (argc > 3) { printHelp(); exit(1); }
     int listening = createListeningSocket(argv[2] ? argv[2] : "8080");
 
@@ -43,6 +46,12 @@ static void serve(int argc, char **argv) {
     }
 
     Socket_close(.fd=listening);
+}
+
+static void clientRoutine(int argc, char **argv) {
+    if ((argc < 4) || (argc > 5)) { printHelp(); exit(1); }
+
+    //~ int connection = createConnection(argv[2], argv[3]);
 }
 
 static int createListeningSocket(char *port) {
@@ -76,3 +85,17 @@ static void echoSocket(const int connection) {
     } while (n == SIZE);
     #undef SIZE
 }
+
+//~ static int createConnection(char *node, char *service) {
+    //~ struct addrinfo *address;
+    //~ int errcode = Socket_getaddrinfo(.res=&address, .node=node,
+                                     //~ .service=service);
+    //~ if (errcode) { perror("Could not get remote address."); exit(1);}
+
+    //~ int connection = Socket_socket();
+    //~ Socket_connect(address);
+
+    //~ Socket_freeaddrinfo(res);
+
+    //~ return address;
+//~ }
