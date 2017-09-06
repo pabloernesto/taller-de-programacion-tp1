@@ -65,8 +65,11 @@ static void clientRoutine(int argc, char **argv) {
 }
 
 static void clientLoop(int connection, FILE *input) {
-    char s[] = "Hi";
-    Socket_send(.fd=connection, .buf=s, .len=strlen(s));
+    char *s;
+    while (fscanf(input, "%ms", &s) != EOF) {
+        Socket_send(.fd=connection, .buf=s, .len=strlen(s));
+        free(s);
+    }
 }
 
 static int createListeningSocket(char *port) {
