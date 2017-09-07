@@ -16,7 +16,9 @@
 
 static int createConnection(char *node, char *service);
 static void clientLoop(int connection);
+
 static void sendPrint(int connection);
+static void sendSpace(int connection);
 
 void clientRoutine(int argc, char **argv) {
     if ((argc < 4) || (argc > 5)) { printHelp(); exit(1); }
@@ -56,6 +58,8 @@ static void clientLoop(int connection) {
     while (scanf("%s31", s) != EOF) {
         if (strcmp("print", s) == 0) {
             sendPrint(connection);
+        } else if (strcmp("space", s) == 0) {
+            sendSpace(connection);
         } else {
             fprintf(stderr, "Unknown command: %s", s);
             exit(1);
@@ -72,6 +76,30 @@ static void sendPrint(int connection) {
             perror(NULL);
         else
             fprintf(stderr, "connection shutdown.\n");
+        exit(1);
+    }
+}
+
+static void sendSpace(int connection) {
+    /* Preparing package. */
+    int package[2];
+    package[0] = htonl(3);
+    if (scanf("%d", package + 1) < 1) {
+        fprintf(stderr, "sendPrint: could not read position");
+        exit(1);
+    }
+
+    /* Sending. */
+    int n = Socket_send(.fd=connection, .buf=package, .len=8);
+    if (n < 8) {
+        fprintf(stderr, "sendPrint: package send failed");
+
+        if (n >= 0) {
+            fprintf(stderr, ", connection shutdown.\n");
+        } else {
+            fprintf(stderr, ":");
+            perror(NULL);
+        }
         exit(1);
     }
 }
