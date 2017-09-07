@@ -17,7 +17,8 @@
 static int createListeningSocket(char *port);
 static void echoSocket(const int fd);
 
-static void handlePrint(void);
+static void handlePrint(int connection);
+static void handleSpace(int connection);
 
 void serverRoutine(int argc, char **argv) {
     if (argc > 3) { printHelp(); exit(1); }
@@ -76,7 +77,9 @@ static void echoSocket(const int connection) {
 
         opcode = ntohl(opcode);
         if (opcode == 5) {
-            handlePrint();
+            handlePrint(connection);
+        } else if (opcode == 3) {
+            handleSpace(connection);
         } else {
             fprintf(stderr, "Unrecognized opcode: %d\n", opcode);
             return;
@@ -84,6 +87,25 @@ static void echoSocket(const int connection) {
     } while (1);
 }
 
-static void handlePrint(void) {
+static void handlePrint(int connection) {
     printf("print\n");
+}
+
+static void handleSpace(int connection) {
+    int pos;
+    int n = Socket_recv(.fd=connection, .buf=&pos, .len=4);
+    if (n == -1) {
+        perror("handleSpace: socket failure while receiving position");
+        return;
+    } else if (n == 0) {
+        printf("Connection shut down\n");
+        return;
+    } else if (n < 4) {
+        fprintf(stderr, "handleSpace: "
+                        "socket shut down while receiving position.");
+        return;
+    }
+
+    pos = ntohl(pos);
+    printf("space %d\n", pos);
 }

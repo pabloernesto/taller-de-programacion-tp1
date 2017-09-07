@@ -87,6 +87,8 @@ static void sendSpace(int connection) {
     if (scanf("%d", package + 1) < 1) {
         fprintf(stderr, "sendPrint: could not read position");
         exit(1);
+    } else {
+        package[1] = htonl(package[1]);
     }
 
     /* Sending. */
