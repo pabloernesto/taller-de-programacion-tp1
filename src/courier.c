@@ -59,7 +59,7 @@ struct command_s Courier_readCommand(Courier *self) {
 
     const int BUFSIZE = 32;
     char s[BUFSIZE];
-    int n = scanf("%s31", s);
+    int n = scanf("%31s", s);
 
     if (n <= 0) {
         fprintf(stderr, "Read error.\n");
@@ -97,7 +97,8 @@ struct command_s Courier_recvCommand(Courier *self) {
 
     if (command.opcode == 1) {
         if ((-1 == recvLong(self, &(command.u.i.pos))) ||
-                (-1 == recvString(self, &(command.u.i.len), &(command.u.i.data))))
+                (-1 == recvString(self, &(command.u.i.len),
+                                  &(command.u.i.data))))
             command = (struct command_s){ .opcode=-1 };
     } else if (command.opcode == 2) {
         if ((-1 == recvLong(self, &(command.u.d.from))) ||
@@ -121,7 +122,7 @@ struct command_s Courier_recvCommand(Courier *self) {
 int Courier_sendCommand(Courier *self, struct command_s command) {
     if (command.opcode == 1) {
         if ((-1 == sendLong(self, command.opcode)) ||
-                (-1 == sendShort(self, command.u.i.len)) ||
+                (-1 == sendLong(self, command.u.i.pos)) ||
                 (-1 == sendString(self, command.u.i.len, command.u.i.data)))
             return -1;
     } else if (command.opcode == 2) {
@@ -178,7 +179,7 @@ static void readInsert(struct command_s *in) {
     char *s = malloc(257);
     assert(s);
 
-    if (scanf("%d %s256", &(in->u.i.pos), s) == 2) {
+    if (scanf("%d %256s", &(in->u.i.pos), s) == 2) {
         in->u.i.len = (short int) strlen(s);
         in->u.i.data = s;
         in->opcode = 1;
@@ -242,7 +243,7 @@ static int recvString(Courier *self, short int *len, char **buf) {
         return -1;
     }
 
-    *buf[*len + 1] = '\0';
+    (*buf)[*len + 1] = '\0';
     return 0;
 }
 
