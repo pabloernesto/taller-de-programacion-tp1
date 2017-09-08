@@ -17,7 +17,7 @@
 #include <arpa/inet.h>
 
 static int createListeningSocket(char *port);
-static void serverLoop(Courier *courier, Rope *rope);
+static void serverLoop(Courier *courier);
 
 void serverRoutine(int argc, char **argv) {
     if (argc > 3) { printHelp(); exit(1); }
@@ -29,11 +29,9 @@ void serverRoutine(int argc, char **argv) {
 
         int connection = ret.fd;
         Courier *courier = Courier_new(connection);
-        Rope *rope = Rope_new();
 
-        serverLoop(courier, rope);
+        serverLoop(courier);
 
-        Rope_destroy(rope);
         Courier_destroy(courier);
         Socket_shutdown(.fd=connection);
         Socket_close(.fd=connection);
@@ -63,18 +61,20 @@ static int createListeningSocket(char *port) {
     return fd;
 }
 
-static void serverLoop(Courier *courier, Rope *rope) {
+static void serverLoop(Courier *courier) {
+    Rope *rope = Rope_new();
+
     do {
         struct command_s command = Courier_recvCommand(courier);
 
         if (command.opcode == 1) {
-            Rope_insert(rope, command.u.i.pos, command.u.i.data);
+            rope = Rope_insert(rope, command.u.i.pos, command.u.i.data);
         } else if (command.opcode == 2) {
-            Rope_delete(rope, command.u.d.from, command.u.d.to);
+            rope = Rope_delete(rope, command.u.d.from, command.u.d.to);
         } else if (command.opcode == 3) {
-            Rope_insert(rope, command.u.s.pos, " ");
+            rope = Rope_insert(rope, command.u.s.pos, " ");
         } else if (command.opcode == 4) {
-            Rope_insert(rope, command.u.n.pos, "\n");
+            rope = Rope_insert(rope, command.u.n.pos, "\n");
         } else if (command.opcode == 5) {
             char *s = Rope_toString(rope);
             struct response_s r = { .len=strlen(s), .data = s };
@@ -88,4 +88,6 @@ static void serverLoop(Courier *courier, Rope *rope) {
 
         Courier_destroyCommand(command);
     } while (1);
+
+    Rope_destroy(rope);
 }

@@ -243,7 +243,7 @@ static int recvString(Courier *self, short int *len, char **buf) {
         return -1;
     }
 
-    (*buf)[*len + 1] = '\0';
+    (*buf)[*len] = '\0';
     return 0;
 }
 
@@ -258,6 +258,6 @@ static int recvLongString(Courier *self, int *len, char **buf) {
         return -1;
     }
 
-    *buf[*len + 1] = '\0';
+    (*buf)[*len] = '\0';
     return 0;
 }
