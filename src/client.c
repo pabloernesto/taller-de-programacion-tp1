@@ -60,11 +60,11 @@ static void clientLoop(int connection) {
         }
 
         Courier_sendCommand(courier, command);
-        //~ if (command.opcode == 5) {
-            //~ struct response_s response = Courier_recvResponse(courier);
-            //~ /* TODO: Print response. */
-            //~ Courier_destroyResponse(response);
-        //~ }
+        if (command.opcode == 5) {
+            struct response_s response = Courier_recvResponse(courier);
+            printf("%s", response.data);
+            Courier_destroyResponse(response);
+        }
 
         Courier_destroyCommand(command);
     } while (1);

@@ -8,6 +8,7 @@
 #include <netdb.h>
 #include "socket.h"
 
+#include "rope.h"
 #include "courier.h"
 #include <stdio.h>
 #include <unistd.h>
@@ -16,7 +17,7 @@
 #include <arpa/inet.h>
 
 static int createListeningSocket(char *port);
-static void serverLoop(const int fd);
+static void serverLoop(Courier *courier, Rope *rope);
 
 void serverRoutine(int argc, char **argv) {
     if (argc > 3) { printHelp(); exit(1); }
@@ -27,8 +28,13 @@ void serverRoutine(int argc, char **argv) {
         if (ret.error != 0) { perror("Accept failed"); break; }
 
         int connection = ret.fd;
-        serverLoop(connection);
+        Courier *courier = Courier_new(connection);
+        Rope *rope = Rope_new();
 
+        serverLoop(courier, rope);
+
+        Rope_destroy(rope);
+        Courier_destroy(courier);
         Socket_shutdown(.fd=connection);
         Socket_close(.fd=connection);
     }
@@ -57,27 +63,29 @@ static int createListeningSocket(char *port) {
     return fd;
 }
 
-static void serverLoop(const int connection) {
-    Courier *courier = Courier_new(connection);
+static void serverLoop(Courier *courier, Rope *rope) {
     do {
         struct command_s command = Courier_recvCommand(courier);
 
         if (command.opcode == 1) {
-            printf("insert\n");
+            Rope_insert(rope, command.u.i.pos, command.u.i.data);
         } else if (command.opcode == 2) {
-            printf("delete\n");
+            Rope_delete(rope, command.u.d.from, command.u.d.to);
         } else if (command.opcode == 3) {
-            printf("space\n");
+            Rope_insert(rope, command.u.s.pos, " ");
         } else if (command.opcode == 4) {
-            printf("newline\n");
+            Rope_insert(rope, command.u.n.pos, "\n");
         } else if (command.opcode == 5) {
-            printf("print\n");
+            char *s = Rope_toString(rope);
+            struct response_s r = { .len=strlen(s), .data = s };
+            Courier_sendResponse(courier, r);
+            Courier_destroyResponse(r);
         } else {
             fprintf(stderr, "Unrecognized opcode: %d\n", command.opcode);
+            Courier_destroyCommand(command);
             break;
         }
+
         Courier_destroyCommand(command);
     } while (1);
-
-    Courier_destroy(courier);
 }

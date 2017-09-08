@@ -95,9 +95,7 @@ int Rope_size(const Rope *self) {
 
     /* If this is a leaf. */
     if (BinaryTree_isLeaf(self)) {
-        /* If this is an empty rope. */
-        if (getText(self) == NULL) return 0;
-
+        assert(getText(self) != NULL);
         return strlen(getText(self));
     }
 
