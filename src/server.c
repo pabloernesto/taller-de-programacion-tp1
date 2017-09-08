@@ -8,6 +8,7 @@
 #include <netdb.h>
 #include "socket.h"
 
+#include "courier.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -15,10 +16,7 @@
 #include <arpa/inet.h>
 
 static int createListeningSocket(char *port);
-static void echoSocket(const int fd);
-
-static void handlePrint(int connection);
-static void handleSpace(int connection);
+static void serverLoop(const int fd);
 
 void serverRoutine(int argc, char **argv) {
     if (argc > 3) { printHelp(); exit(1); }
@@ -29,7 +27,7 @@ void serverRoutine(int argc, char **argv) {
         if (ret.error != 0) { perror("Accept failed"); break; }
 
         int connection = ret.fd;
-        echoSocket(connection);
+        serverLoop(connection);
 
         Socket_shutdown(.fd=connection);
         Socket_close(.fd=connection);
@@ -59,53 +57,27 @@ static int createListeningSocket(char *port) {
     return fd;
 }
 
-static void echoSocket(const int connection) {
-    int opcode;
+static void serverLoop(const int connection) {
+    Courier *courier = Courier_new(connection);
     do {
-        int n = Socket_recv(.fd=connection, .buf=&opcode, .len=4);
-        if (n == -1) {
-            perror("echoSocket: socket failure while receiving opcode");
-            return;
-        } else if (n == 0) {
-            printf("Connection shut down\n");
-            return;
-        } else if (n < 4) {
-            fprintf(stderr, "echoSocket: "
-                            "socket shut down while receiving opcode.");
-            return;
-        }
+        struct command_s command = Courier_recvCommand(courier);
 
-        opcode = ntohl(opcode);
-        if (opcode == 5) {
-            handlePrint(connection);
-        } else if (opcode == 3) {
-            handleSpace(connection);
+        if (command.opcode == 1) {
+            printf("insert\n");
+        } else if (command.opcode == 2) {
+            printf("delete\n");
+        } else if (command.opcode == 3) {
+            printf("space\n");
+        } else if (command.opcode == 4) {
+            printf("newline\n");
+        } else if (command.opcode == 5) {
+            printf("print\n");
         } else {
-            fprintf(stderr, "Unrecognized opcode: %d\n", opcode);
-            return;
+            fprintf(stderr, "Unrecognized opcode: %d\n", command.opcode);
+            break;
         }
+        Courier_destroyCommand(command);
     } while (1);
-}
 
-static void handlePrint(int connection) {
-    printf("print\n");
-}
-
-static void handleSpace(int connection) {
-    int pos;
-    int n = Socket_recv(.fd=connection, .buf=&pos, .len=4);
-    if (n == -1) {
-        perror("handleSpace: socket failure while receiving position");
-        return;
-    } else if (n == 0) {
-        printf("Connection shut down\n");
-        return;
-    } else if (n < 4) {
-        fprintf(stderr, "handleSpace: "
-                        "socket shut down while receiving position.");
-        return;
-    }
-
-    pos = ntohl(pos);
-    printf("space %d\n", pos);
+    Courier_destroy(courier);
 }

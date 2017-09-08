@@ -8,17 +8,12 @@
 #include <netdb.h>
 #include "socket.h"
 
+#include "courier.h"
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
-#include <string.h>
-#include <arpa/inet.h>
 
 static int createConnection(char *node, char *service);
 static void clientLoop(int connection);
-
-static void sendPrint(int connection);
-static void sendSpace(int connection);
 
 void clientRoutine(int argc, char **argv) {
     if ((argc < 4) || (argc > 5)) { printHelp(); exit(1); }
@@ -53,55 +48,26 @@ static int createConnection(char *node, char *service) {
 }
 
 static void clientLoop(int connection) {
-    const int BUFSIZE = 32;
-    char s[BUFSIZE];
-    while (scanf("%s31", s) != EOF) {
-        if (strcmp("print", s) == 0) {
-            sendPrint(connection);
-        } else if (strcmp("space", s) == 0) {
-            sendSpace(connection);
-        } else {
-            fprintf(stderr, "Unknown command: %s", s);
+    Courier *courier = Courier_new(connection);
+    do {
+        struct command_s command = Courier_readCommand(courier);
+
+        if (command.opcode == 0) {
+            break;
+        } else if (command.opcode == -1) {
+            fprintf(stderr, "Error reading command. Exiting.");
             exit(1);
         }
-    }
-}
 
-static void sendPrint(int connection) {
-    int opcode = htonl(5);
-    int n = Socket_send(.fd=connection, .buf=&opcode, .len=4);
-    if (n < 4) {
-        fprintf(stderr, "sendPrint: Socket_send failed: ");
-        if (n < 0)
-            perror(NULL);
-        else
-            fprintf(stderr, "connection shutdown.\n");
-        exit(1);
-    }
-}
+        Courier_sendCommand(courier, command);
+        //~ if (command.opcode == 5) {
+            //~ struct response_s response = Courier_recvResponse(courier);
+            //~ /* TODO: Print response. */
+            //~ Courier_destroyResponse(response);
+        //~ }
 
-static void sendSpace(int connection) {
-    /* Preparing package. */
-    int package[2];
-    package[0] = htonl(3);
-    if (scanf("%d", package + 1) < 1) {
-        fprintf(stderr, "sendPrint: could not read position");
-        exit(1);
-    } else {
-        package[1] = htonl(package[1]);
-    }
+        Courier_destroyCommand(command);
+    } while (1);
 
-    /* Sending. */
-    int n = Socket_send(.fd=connection, .buf=package, .len=8);
-    if (n < 8) {
-        fprintf(stderr, "sendPrint: package send failed");
-
-        if (n >= 0) {
-            fprintf(stderr, ", connection shutdown.\n");
-        } else {
-            fprintf(stderr, ":");
-            perror(NULL);
-        }
-        exit(1);
-    }
+    Courier_destroy(courier);
 }
