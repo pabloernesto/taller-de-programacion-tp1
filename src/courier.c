@@ -61,12 +61,8 @@ struct command_s Courier_readCommand(Courier *self) {
     char s[BUFSIZE];
     int n = scanf("%31s", s);
 
-    if (n <= 0) {
-        fprintf(stderr, "Read error.\n");
-        ret = (struct command_s){ .opcode=-1 };
-        return ret;
-    } else if (n == EOF) {
-        fprintf(stderr, "Reached EOF.\n");
+    if ((n <= 0) || (n == EOF)) {
+        ret = (struct command_s){ .opcode=0 };
         return ret;
     }
 

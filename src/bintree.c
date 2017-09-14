@@ -44,7 +44,7 @@ void BinaryTree_delete(BinaryTree *self, Deallocator f) {
 }
 
 void *BinaryTree_getLiveContent(const BinaryTree *self) {
-    assert (self != NULL);
+    assert(self != NULL);
     return self->content;
 }
 

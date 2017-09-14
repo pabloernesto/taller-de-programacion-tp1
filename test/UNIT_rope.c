@@ -36,6 +36,8 @@ static void test_insertInTheMiddleInLargePartialTree();
 static void test_deleteBeginingLeafOnly();
 static void test_deleteEndLeafOnly();
 
+static void test_growTreeFromEmptyRope();
+
 int main(int argc, char **argv) {
     test_sizeOfEmptyStringIsZero();
     test_sizeLeaf();
@@ -66,6 +68,8 @@ int main(int argc, char **argv) {
 
     test_deleteBeginingLeafOnly();
     test_deleteEndLeafOnly();
+
+    test_growTreeFromEmptyRope();
 
     printf("All tests ok.\n");
 }
@@ -380,6 +384,19 @@ static void test_deleteEndLeafOnly() {
     assert(Rope_size(r) == 5);
     char *s = Rope_toString(r);
     assert(strcmp("Hello", s) == 0);
+    free(s);
+
+    Rope_destroy(r);
+}
+
+static void test_growTreeFromEmptyRope() {
+    Rope *r = Rope_new();
+    r = Rope_insert(r, -1, "Hello");
+    r = Rope_insert(r, -1, "!");
+
+    assert(Rope_size(r) == 6);
+    char *s = Rope_toString(r);
+    assert(strcmp("Hello!", s) == 0);
     free(s);
 
     Rope_destroy(r);

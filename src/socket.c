@@ -86,6 +86,8 @@ int _send(struct _send_s in) {
 }
 
 int _recv(struct _recv_s in) {
+    if (in.len == 0) return 0;
+
     char *p = in.buf;
     int written = 0;
     do {

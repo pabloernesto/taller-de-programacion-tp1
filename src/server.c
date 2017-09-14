@@ -77,9 +77,12 @@ static void serverLoop(Courier *courier) {
             rope = Rope_insert(rope, command.u.n.pos, "\n");
         } else if (command.opcode == 5) {
             char *s = Rope_toString(rope);
-            struct response_s r = { .len=strlen(s), .data = s };
+            struct response_s r = { .len=strlen(s), .data=s };
             Courier_sendResponse(courier, r);
             Courier_destroyResponse(r);
+        } else if (command.opcode == 0) {
+            Courier_destroyCommand(command);
+            break;
         } else {
             fprintf(stderr, "Unrecognized opcode: %d\n", command.opcode);
             Courier_destroyCommand(command);
