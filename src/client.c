@@ -12,8 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static int createConnection(char *node, char *service);
-static void clientLoop(int connection);
+static void clientLoop(socket_t *sock);
 
 void clientRoutine(int argc, char **argv) {
     if ((argc < 4) || (argc > 5)) { printHelp(); exit(1); }
@@ -21,34 +20,21 @@ void clientRoutine(int argc, char **argv) {
     if (argv[4] != NULL) stdin = freopen(argv[4], "r", stdin);
     if (stdin == NULL) { perror("Could not open file"); exit(1); }
 
-    int connection = createConnection(argv[2], argv[3]);
+    socket_t sock;
+    short portNumber;
+    sscanf(argv[3], "%hd", &portNumber);
+    if (socket_create(&sock) || socket_connect(&sock, argv[2], portNumber))
+        goto closeInput;
 
-    clientLoop(connection);
+    clientLoop(&sock);
 
-    Socket_shutdown(.fd=connection);
-    Socket_close(.fd=connection);
+    socket_destroy(&sock);
+closeInput:
+    fclose(stdin);
 }
 
-static int createConnection(char *node, char *service) {
-    struct addrinfo *address;
-    int errcode = Socket_getaddrinfo(.res=&address, .node=node,
-                                     .service=service);
-    if (errcode) { perror("Could not get remote address"); exit(1);}
-
-    int connection = Socket_socket();
-    if (connection == -1) { perror("Could not open socket"); exit(1); }
-
-    if (Socket_connect(.fd=connection, .addr=address) == -1) {
-        perror("Could not connect");
-        exit(1);
-    }
-
-    Socket_freeaddrinfo(.res=address);
-    return connection;
-}
-
-static void clientLoop(int connection) {
-    Courier *courier = Courier_new(connection);
+static void clientLoop(socket_t *sock) {
+    Courier *courier = Courier_new(sock);
     do {
         struct command_s command = Courier_readCommand(courier);
 

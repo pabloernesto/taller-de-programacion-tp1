@@ -1,3 +1,5 @@
+#include "socket.h"
+
 #ifndef COURIER_H
 #define COURIER_H
 
@@ -26,7 +28,7 @@ typedef struct Courier Courier;
 /******************************************************************************/
 /* Creator and destructor. */
 
-Courier *Courier_new(int socket);
+Courier *Courier_new(socket_t *socket);
 
 /* Will not close the socket. */
 void Courier_destroy(Courier *self);

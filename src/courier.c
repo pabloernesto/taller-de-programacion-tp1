@@ -28,13 +28,13 @@ static int recvShort(Courier *self, short int *s);
 static int recvString(Courier *self, short int *len, char **buf);
 static int recvLongString(Courier *self, int *len, char **buf);
 
-struct Courier { int socket; };
+struct Courier { socket_t *socket; };
 
-Courier *Courier_new(int socket) {
-    assert(socket >= 0);
+Courier *Courier_new(socket_t *socket) {
+    if (!socket || (socket->socket < 0)) return NULL;
 
     Courier *self = malloc(sizeof(Courier));
-    assert(self);
+    if (!self) return NULL;
 
     *self = (Courier){ .socket=socket };
     return self;
@@ -107,7 +107,6 @@ struct command_s Courier_recvCommand(Courier *self) {
         if (-1 == recvLong(self, &(command.u.n.pos)))
             command = (struct command_s){ .opcode=-1 };
     } else if (command.opcode == 5) {
-        ;
     } else {
         fprintf(stderr, "Unrecoginzed opcode: %d\n", command.opcode);
         command = (struct command_s){ .opcode=-1 };
@@ -194,36 +193,32 @@ static void readDelete(struct command_s *in) {
 
 static int sendLong(Courier *self, int l) {
     l = htonl(l);
-    if (Socket_send(.fd=self->socket, .buf=&l, .len=4) != 4) return -1;
-    return 0;
+    return socket_send(self->socket, &l, 4);
 }
 
 static int sendShort(Courier *self, short int s) {
     s = htons(s);
-    if (Socket_send(.fd=self->socket, .buf=&s, .len=2) != 2) return -1;
-    return 0;
+    return socket_send(self->socket, &s, 2);
 }
 
 static int sendString(Courier *self, short int len, char *buf) {
     if (sendShort(self, len) == -1) return -1;
-    if (Socket_send(.fd=self->socket, .buf=buf, .len=len) != len) return -1;
-    return 0;
+    return socket_send(self->socket, buf, len);
 }
 
 static int sendLongString(Courier *self, int len, char *buf) {
     if (sendLong(self, len) == -1) return -1;
-    if (Socket_send(.fd=self->socket, .buf=buf, .len=len) != len) return -1;
-    return 0;
+    return socket_send(self->socket, buf, len);
 }
 
 static int recvLong(Courier *self, int *l) {
-    if (Socket_recv(.fd=self->socket, .buf=l, .len=4) != 4) return -1;
+    if (socket_receive(self->socket, l, 4)) return -1;
     *l = ntohl(*l);
     return 0;
 }
 
 static int recvShort(Courier *self, short int *s) {
-    if (Socket_recv(.fd=self->socket, .buf=s, .len=2) != 2) return -1;
+    if (socket_receive(self->socket, s, 2)) return -1;
     *s = ntohs(*s);
     return 0;
 }
@@ -234,7 +229,7 @@ static int recvString(Courier *self, short int *len, char **buf) {
     *buf = malloc(*len + 1);
     assert(buf);
 
-    if (Socket_recv(.fd=self->socket, .buf=*buf, .len=*len) != *len) {
+    if (socket_receive(self->socket, *buf, *len)) {
         free(*buf);
         return -1;
     }
@@ -249,7 +244,7 @@ static int recvLongString(Courier *self, int *len, char **buf) {
     *buf = malloc(*len + 1);
     assert(buf);
 
-    if (Socket_recv(.fd=self->socket, .buf=*buf, .len=*len) != *len) {
+    if (socket_receive(self->socket, *buf, *len)) {
         free(*buf);
         return -1;
     }
