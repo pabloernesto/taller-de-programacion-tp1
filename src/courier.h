@@ -11,6 +11,9 @@ struct delete_command_s { int from; int to; };
 struct space_command_s { int pos; };
 struct newline_command_s { int pos; };
 
+enum opcodes {COURIER_INSERT=1, COURIER_DELETE, COURIER_SPACE,
+                COURIER_NEWLINE, COURIER_PRINT};
+
 struct command_s {
     int opcode;
     union _command_container {

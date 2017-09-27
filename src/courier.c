@@ -93,50 +93,70 @@ struct command_s Courier_recvCommand(Courier *self) {
         return command;
     }
 
-    if (command.opcode == 1) {
-        if ((-1 == recvLong(self, &(command.u.i.pos))) ||
-                (-1 == recvString(self, &(command.u.i.len),
-                                  &(command.u.i.data))))
+    switch (command.opcode) {
+        case COURIER_INSERT:
+            if (
+                    recvLong(self, &(command.u.i.pos)) ||
+                    recvString(self, &(command.u.i.len), &(command.u.i.data))
+            ) command = (struct command_s){ .opcode=-1 };
+            break;
+        case COURIER_DELETE:
+            if (
+                    recvLong(self, &(command.u.d.from)) ||
+                    recvLong(self, &(command.u.d.to))
+            ) command = (struct command_s){ .opcode=-1 };
+            break;
+        case COURIER_SPACE:
+            if (recvLong(self, &(command.u.s.pos)))
+                command = (struct command_s){ .opcode=-1 };
+            break;
+        case COURIER_NEWLINE:
+            if (recvLong(self, &(command.u.n.pos)))
+                command = (struct command_s){ .opcode=-1 };
+            break;
+        case COURIER_PRINT:
+            break;
+        default:
+            fprintf(stderr, "Unrecoginzed opcode: %d\n", command.opcode);
             command = (struct command_s){ .opcode=-1 };
-    } else if (command.opcode == 2) {
-        if ((-1 == recvLong(self, &(command.u.d.from))) ||
-                (-1 == recvLong(self, &(command.u.d.to))))
-            command = (struct command_s){ .opcode=-1 };
-    } else if (command.opcode == 3) {
-        if (-1 == recvLong(self, &(command.u.s.pos)))
-            command = (struct command_s){ .opcode=-1 };
-    } else if (command.opcode == 4) {
-        if (-1 == recvLong(self, &(command.u.n.pos)))
-            command = (struct command_s){ .opcode=-1 };
-    } else if (command.opcode == 5) {
-    } else {
-        fprintf(stderr, "Unrecoginzed opcode: %d\n", command.opcode);
-        command = (struct command_s){ .opcode=-1 };
     }
     return command;
 }
 
 int Courier_sendCommand(Courier *self, struct command_s command) {
-    if (command.opcode == 1) {
-        if ((-1 == sendLong(self, command.opcode)) ||
-                (-1 == sendLong(self, command.u.i.pos)) ||
-                (-1 == sendString(self, command.u.i.len, command.u.i.data)))
-            return -1;
-    } else if (command.opcode == 2) {
-        if ((-1 == sendLong(self, command.opcode)) ||
-                (-1 == sendLong(self, command.u.d.from)) ||
-                (-1 == sendLong(self, command.u.d.to)))
-            return -1;
-    } else if (command.opcode == 3) {
-        if ((-1 == sendLong(self, command.opcode)) ||
-                (-1 == sendLong(self, command.u.s.pos)))
-            return -1;
-    } else if (command.opcode == 4) {
-        if ((-1 == sendLong(self, command.opcode)) ||
-                (-1 == sendLong(self, command.u.n.pos)))
-            return -1;
-    } else if (command.opcode == 5) {
-        if (-1 == sendLong(self, command.opcode)) return -1;
+    switch (command.opcode) {
+        case COURIER_INSERT:
+            if (
+                sendLong(self, command.opcode) ||
+                sendLong(self, command.u.i.pos) ||
+                sendString(self, command.u.i.len, command.u.i.data)
+            ) return -1;
+            break;
+        case COURIER_DELETE:
+            if (
+                sendLong(self, command.opcode) ||
+                sendLong(self, command.u.d.from) ||
+                sendLong(self, command.u.d.to)
+            ) return -1;
+            break;
+        case COURIER_SPACE:
+            if (
+                sendLong(self, command.opcode) ||
+                sendLong(self, command.u.s.pos)
+            ) return -1;
+            break;
+        case COURIER_NEWLINE:
+            if (
+                sendLong(self, command.opcode) ||
+                sendLong(self, command.u.n.pos)
+            ) return -1;
+            break;
+        case COURIER_PRINT:
+            if (sendLong(self, command.opcode)) return -1;
+            break;
+        default:
+            fprintf(stderr, "Unrecoginzed opcode: %d\n", command.opcode);
+            command = (struct command_s){ .opcode=-1 };
     }
     return 0;
 }
