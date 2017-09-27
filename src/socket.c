@@ -1,4 +1,5 @@
 #define _POSIX_C_SOURCE 201709L
+#define _ISOC99_SOURCE //snprintf
 #include "socket.h"
 
 #include <sys/socket.h>
@@ -43,7 +44,7 @@ static int _getaddrinfo(const char *host_name, unsigned short port,
                         struct addrinfo **out) {
     // The maximum value of an unsigned short is 65535, five digits long.
     char portString[6];
-    sprintf(portString, "%d", port);
+    snprintf(portString, sizeof(portString), "%d", port);
 
     struct addrinfo hints = (struct addrinfo) {
         .ai_flags=AI_PASSIVE,
