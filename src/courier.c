@@ -10,6 +10,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <limits.h> //USHRT_MAX
+
+#define INSERT_MAX_SIZE (USHRT_MAX + 1)
 
 static void readPrint(struct command_s *in);
 static void readSpace(struct command_s *in);
@@ -170,7 +173,7 @@ static void readNewline(struct command_s *in) {
 }
 
 static void readInsert(struct command_s *in) {
-    char *s = malloc(257);
+    char *s = malloc(INSERT_MAX_SIZE);
     if (!s) return;
 
     if (scanf("%d %256s", &(in->u.i.pos), s) == 2) {
