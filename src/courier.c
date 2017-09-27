@@ -7,7 +7,6 @@
 #include <netdb.h>
 #include "socket.h"
 
-#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -172,7 +171,7 @@ static void readNewline(struct command_s *in) {
 
 static void readInsert(struct command_s *in) {
     char *s = malloc(257);
-    assert(s);
+    if (!s) return;
 
     if (scanf("%d %256s", &(in->u.i.pos), s) == 2) {
         in->u.i.len = (short int) strlen(s);
@@ -227,7 +226,7 @@ static int recvString(Courier *self, short int *len, char **buf) {
     if (recvShort(self, len) == -1) return -1;
 
     *buf = malloc(*len + 1);
-    assert(buf);
+    if (!buf) return -1;
 
     if (socket_receive(self->socket, *buf, *len)) {
         free(*buf);
@@ -242,7 +241,7 @@ static int recvLongString(Courier *self, int *len, char **buf) {
     if (recvLong(self, len) == -1) return -1;
 
     *buf = malloc(*len + 1);
-    assert(buf);
+    if(!buf) return -1;
 
     if (socket_receive(self->socket, *buf, *len)) {
         free(*buf);

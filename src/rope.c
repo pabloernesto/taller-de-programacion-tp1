@@ -3,7 +3,6 @@
 #define _POSIX_C_SOURCE 201708L
 
 #include "rope.h"
-#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -26,10 +25,13 @@ Rope *Rope_new() {
 
 Rope *Rope_newFrom(const char *text) {
     RopeContent *c = (RopeContent *) malloc(sizeof(RopeContent));
-    assert(c != NULL);
+    if (!c) return NULL;
 
     *c = (RopeContent) { .value = strlen(text), .text = strdup(text) };
-    assert(c->text != NULL);
+    if (!c->text) {
+        free(c);
+        return NULL;
+    }
 
     return BinaryTree_new(c, NULL, NULL);
 }
@@ -40,7 +42,7 @@ void Rope_destroy(Rope *self) {
 
 Rope *Rope_insert(Rope *self, int pos, const char *text) {
     if (pos < 0) pos += Rope_size(self) + 1;
-    assert(pos >= 0);
+    if (pos < 0) return NULL;
 
     Rope *right = Rope_split(self, pos);
     return Rope_join(self, Rope_join(Rope_newFrom(text), right));
@@ -49,7 +51,8 @@ Rope *Rope_insert(Rope *self, int pos, const char *text) {
 Rope *Rope_delete(Rope *self, int begin, int end) {
     if (begin < 0) begin += Rope_size(self) + 1;
     if (end < 0) end += Rope_size(self) + 1;
-    assert((begin >= 0) && (end >= 0) && (begin <= end));
+
+    if ((begin < 0) || (end < 0) || (begin > end)) return NULL;
 
     Rope *last = Rope_split(self, end);
     Rope *middle = Rope_split(self, begin);
@@ -61,7 +64,7 @@ Rope *Rope_delete(Rope *self, int begin, int end) {
 
 Rope *Rope_split(Rope *self, int p) {
     if (p < 0) p += Rope_size(self) + 1;
-    assert(p >= 0);
+    if (p < 0) return NULL;
 
     return splitRecursive(self, p);
 }
@@ -95,7 +98,7 @@ int Rope_size(const Rope *self) {
 
     /* If this is a leaf. */
     if (BinaryTree_isLeaf(self)) {
-        assert(getText(self) != NULL);
+        if (!getText(self)) return 0;
         return strlen(getText(self));
     }
 
@@ -105,7 +108,7 @@ int Rope_size(const Rope *self) {
 char *Rope_toString(const Rope *self) {
     int size = Rope_size(self) + 1;
     char *s = (char *) malloc(size);
-    assert(s != NULL);
+    if (!s) return NULL;
 
     toStringRecurse(self, s);
     s[size - 1] = '\0';
@@ -136,11 +139,11 @@ static Rope *splitRecursive(Rope *self, int p) {
 }
 
 static Rope *splitLeaf(Rope *self, int p) {
-    assert(p >= 0);
+    if (p < 0) return NULL;
 
     char *text = getText(self);
     int len = strlen(text);
-    assert(p <= len);
+    if (p > len) return NULL;
 
     Rope *ret = Rope_newFrom(text + p);
     text[p] = '\0';

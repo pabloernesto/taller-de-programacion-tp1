@@ -2,7 +2,6 @@
 
 #include "bintree.h"
 #include <stdlib.h>
-#include <assert.h>
 
 struct BinaryTreeNode {
     struct BinaryTreeNode *lchild, *rchild;
@@ -14,7 +13,7 @@ void noOP(void *object) {}
 BinaryTree *BinaryTree_new(void *content, BinaryTree *lchild,
                            BinaryTree *rchild) {
     BinaryTree *self = (BinaryTree *) malloc(sizeof(BinaryTree));
-    assert(self != NULL);
+    if (!self) return NULL;
 
     *self = (BinaryTree) {
         .content = content,
@@ -44,7 +43,7 @@ void BinaryTree_delete(BinaryTree *self, Deallocator f) {
 }
 
 void *BinaryTree_getLiveContent(const BinaryTree *self) {
-    assert(self != NULL);
+    if (!self) return NULL;
     return self->content;
 }
 
