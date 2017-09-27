@@ -90,6 +90,7 @@ int socket_send(socket_t *self, const void* buffer, size_t length) {
 }
 
 int socket_receive(socket_t *self, void* buffer, size_t length) {
+    if (length == 0) return 0;
     char *end = (char*)buffer + length;
     do {
         int n = recv(self->socket, buffer, length, 0);
