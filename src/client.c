@@ -10,15 +10,14 @@
 
 #include "courier.h"
 #include <stdio.h>
-#include <stdlib.h>
 
 static void clientLoop(socket_t *sock);
 
 void clientRoutine(int argc, char **argv) {
-    if ((argc < 4) || (argc > 5)) { printHelp(); exit(1); }
+    if ((argc < 4) || (argc > 5)) { printHelp(); return; }
 
     if (argv[4] != NULL) stdin = freopen(argv[4], "r", stdin);
-    if (stdin == NULL) { perror("Could not open file"); exit(1); }
+    if (stdin == NULL) { perror("Could not open file"); return; }
 
     socket_t sock;
     short portNumber;

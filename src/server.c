@@ -12,14 +12,13 @@
 #include "courier.h"
 #include <stdio.h>
 #include <unistd.h>
-#include <stdlib.h>
 #include <string.h>
 #include <arpa/inet.h>
 
 static void serverLoop(Courier *courier);
 
 void serverRoutine(int argc, char **argv) {
-    if (argc > 3) { printHelp(); exit(1); }
+    if (argc > 3) { printHelp(); return; }
 
     socket_t sock;
     if (socket_create(&sock)) return;
