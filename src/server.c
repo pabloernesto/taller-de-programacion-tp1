@@ -50,30 +50,36 @@ static void serverLoop(Courier *courier) {
     do {
         struct command_s command = Courier_recvCommand(courier);
 
-        if (command.opcode == 1) {
-            rope = Rope_insert(rope, command.u.i.pos, command.u.i.data);
-        } else if (command.opcode == 2) {
-            rope = Rope_delete(rope, command.u.d.from, command.u.d.to);
-        } else if (command.opcode == 3) {
-            rope = Rope_insert(rope, command.u.s.pos, " ");
-        } else if (command.opcode == 4) {
-            rope = Rope_insert(rope, command.u.n.pos, "\n");
-        } else if (command.opcode == 5) {
-            char *s = Rope_toString(rope);
-            struct response_s r = { .len=strlen(s), .data=s };
-            Courier_sendResponse(courier, r);
-            Courier_destroyResponse(r);
-        } else if (command.opcode == 0) {
-            Courier_destroyCommand(command);
-            break;
-        } else {
-            fprintf(stderr, "Unrecognized opcode: %d\n", command.opcode);
-            Courier_destroyCommand(command);
-            break;
+        switch (command.opcode) {
+            case COURIER_INSERT:
+                rope = Rope_insert(rope, command.u.i.pos, command.u.i.data);
+                break;
+            case COURIER_DELETE:
+                rope = Rope_delete(rope, command.u.d.from, command.u.d.to);
+                break;
+            case COURIER_SPACE:
+                rope = Rope_insert(rope, command.u.s.pos, " ");
+                break;
+            case COURIER_NEWLINE:
+                rope = Rope_insert(rope, command.u.n.pos, "\n");
+                break;
+            case COURIER_PRINT:
+                {
+                    char *s = Rope_toString(rope);
+                    struct response_s r = { .len=strlen(s), .data=s };
+                    Courier_sendResponse(courier, r);
+                    Courier_destroyResponse(r);
+                }
+                break;
+            default:
+                Courier_destroyCommand(command);
+                /* I can't use break because that would only get me out of the
+                   switch, and not the enclosing loop. */
+                goto outro;
         }
-
         Courier_destroyCommand(command);
     } while (1);
 
+outro:
     Rope_destroy(rope);
 }

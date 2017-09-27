@@ -38,15 +38,10 @@ static void clientLoop(socket_t *sock) {
     do {
         struct command_s command = Courier_readCommand(courier);
 
-        if (command.opcode == 0) {
-            break;
-        } else if (command.opcode == -1) {
-            fprintf(stderr, "Error reading command. Exiting.");
-            exit(1);
-        }
+        if (command.opcode < 1) break;
 
         Courier_sendCommand(courier, command);
-        if (command.opcode == 5) {
+        if (command.opcode == COURIER_PRINT) {
             struct response_s response = Courier_recvResponse(courier);
             printf("%s", response.data);
             Courier_destroyResponse(response);

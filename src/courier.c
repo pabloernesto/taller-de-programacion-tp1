@@ -264,7 +264,7 @@ static int recvLongString(Courier *self, int *len, char **buf) {
     if (recvLong(self, len) == -1) return -1;
 
     *buf = malloc(*len + 1);
-    if(!buf) return -1;
+    if (!buf) return -1;
 
     if (socket_receive(self->socket, *buf, *len)) {
         free(*buf);
