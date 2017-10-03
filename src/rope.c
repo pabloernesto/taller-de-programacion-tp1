@@ -1,7 +1,5 @@
 /* Heap based implementation of the rope structure. */
 
-#define _POSIX_C_SOURCE 201708L
-
 #include "rope.h"
 #include <stdlib.h>
 #include <string.h>
@@ -18,6 +16,8 @@ static int getValue(const Rope *self);
 static void setValue(Rope *self, int value);
 static char *getText(const Rope *self);
 static void toStringRecurse(const Rope *self, char *s);
+
+static char *strdup(const char *self);
 
 Rope *Rope_new() {
     return Rope_newFrom("");
@@ -183,4 +183,12 @@ static void toStringRecurse(const Rope *self, char *s) {
     /* Recurse. */
     toStringRecurse(BinaryTree_lchild(self), s);
     toStringRecurse(BinaryTree_rchild(self), s + getValue(self));
+}
+
+static char *strdup(const char *self) {
+    int len = strlen(self);
+    char *outp = malloc(len);
+    if (!outp) return NULL;
+    memcpy(outp, self, len + 1);
+    return outp;
 }
